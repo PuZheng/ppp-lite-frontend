@@ -8,22 +8,10 @@ var resolvePath = function(componentPath) {
 
 module.exports = {
     entry: {
-        'gas_station.list': ['./static/js/gas_station/list/app.js'],
-        'gas_station.object': ['./static/js/gas_station/object/app.js'],
-        'advertisement.object': ['./static/js/advertisement/object/app.js'],
-        'plant.object': ['./static/js/plant/object/app.js'],
-        'dashboard': ['./static/js/dashboard/app.js'],
-        'comment.list': ['./static/js/comment/list/app.js'],
-        'data_source.list': ['./static/js/data_source/list/app.js'],
-        'data_source.object': ['./static/js/data_source/object/app.js'],
-        'feature.list': ['./static/js/feature/list/app.js'],
-        'feature.object': ['./static/js/feature/object/app.js'],
-        'gas_station_report.list': ['./static/js/gas_station_report/list/app.js'],
-        'gas-station-canonize': ['./static/js/utilities/gas-station-canonize/app.js'],
-        'profane-word': ['./static/js/profane-word.js'],
+        'main': ['./js/main.js'],
     },
     output: {
-        path: __dirname + '/static/js/bundle/',
+        path: __dirname + '/js/bundle/',
         filename: "[name].js",
     },
     resolve: {

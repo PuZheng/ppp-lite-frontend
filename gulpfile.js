@@ -2,6 +2,7 @@ var gulp = require('gulp');
 var webpack = require('webpack');
 var webpackConfig = require('./webpack.config.js');
 var gutil = require('gulp-util');
+var WebpackDevServer = require("webpack-dev-server");
 
 gulp.task("webpack:build", function(callback) {
 	// modify some webpack config options
@@ -25,4 +26,27 @@ gulp.task("webpack:build", function(callback) {
 		}));
 		callback();
 	});
+});
+
+gulp.task("webpack-dev-server", function(callback) {
+    // Start a webpack-dev-server
+    var config = Object.create(require('./webpack.hot.config.js'));
+
+    for (var k in config.entry) {
+        config.entry[k].unshift("webpack-dev-server/client?http://127.0.0.1:8080");
+    }
+
+    var compiler = webpack(config);
+
+    new WebpackDevServer(compiler, {
+        publicPath: config.output.publicPath,
+       // server and middleware options
+    }).listen(8080, "localhost", function(err) {
+        if(err) throw new gutil.PluginError("webpack-dev-server", err);
+        // Server listening
+        gutil.log("[webpack-dev-server]", "http://localhost:8080/webpack-dev-server/index.html");
+
+        // keep the server alive or continue?
+        // callback();
+    });
 });
