@@ -6,7 +6,7 @@ for (var k in config.entry) {
 }
 
 config.output.publicPath = 'http://127.0.0.1:8080/js/bundle';
-config.devtool = "source-map";
+config.devtool = "eval";
 config.debug = true;
 config.plugins = config.plugins || [];
 
