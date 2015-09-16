@@ -4,9 +4,10 @@ var webpackConfig = require('./webpack.config.js');
 var gutil = require('gulp-util');
 var WebpackDevServer = require("webpack-dev-server");
 
+
 gulp.task("webpack:build", function(callback) {
 	// modify some webpack config options
-	var myConfig = Object.create(webpackConfig);
+    var myConfig = Object.create(webpackConfig);
 	myConfig.plugins = myConfig.plugins.concat(
 		new webpack.DefinePlugin({
 			"process.env": {
@@ -28,6 +29,24 @@ gulp.task("webpack:build", function(callback) {
 	});
 });
 
+
+gulp.task("webpack:build-dev", function(callback) {
+    // modify some webpack config options
+    var myDevConfig = Object.create(webpackConfig);
+    myDevConfig.devtool = "sourcemap";
+    myDevConfig.debug = true;
+
+    // create a single instance of the compiler to allow caching
+    var devCompiler = webpack(myDevConfig);
+	// run webpack
+	devCompiler.run(function(err, stats) {
+		if(err) throw new gutil.PluginError("webpack:build-dev", err);
+		gutil.log("[webpack:build-dev]", stats.toString({
+			colors: true
+		}));
+		callback();
+	});
+});
 gulp.task("webpack-dev-server", function(callback) {
     // Start a webpack-dev-server
     var config = Object.create(require('./webpack.hot.config.js'));
