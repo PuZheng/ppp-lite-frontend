@@ -1,0 +1,21 @@
+{
+  "name": "ppp-lite-frontend",
+  "version": "0.0.0",
+  "homepage": "https://github.com/PuZheng/ppp-lite-frontend",
+  "authors": [
+    "xiechao06 <xiechao06@gmail.com>"
+  ],
+  "license": "ISC",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "underscore": "~1.8.3",
+    "underscore.string": "~3.2.2"
+  }
+}
