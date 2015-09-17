@@ -20,6 +20,8 @@ module.exports = {
             'semantic-ui': resolvePath('vendors/semantic/dist'),
             'riot-bus': 'js/riot-bus.js',
             'config': 'js/config.js',
+            'pagination': 'js/pagination.js',
+            'wurl': resolvePath('node_modules/wurl/wurl.js')
         },
         root: '.',
     },

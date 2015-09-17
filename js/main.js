@@ -11,19 +11,21 @@ bus.register(new ProjectListStore());
 
 var projectListApp;
 
-var router = function (app) {
+var router = function (app, view, params) {
 
     switch (app) {
-        case 'list': {
-            projectListApp = projectListApp || riot.mount('.container', 'project-list-app');
-            bus.trigger('projectList.fetch', {
-                page: 1,
-                per_page: 16
-            });
+        case 'project': {
+            if (view === 'list') {
+                projectListApp = projectListApp || riot.mount('#main', 'project-list-app');
+                bus.trigger('projectList.fetch', {
+                    page: parseInt(params.page) || 1,
+                    per_page: 18
+                });
+            }
             break;
         }
         default: {
-            riot.route('list');
+            riot.route('project/list');
             break;
         }
     }
