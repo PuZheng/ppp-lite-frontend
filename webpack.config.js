@@ -16,14 +16,12 @@ module.exports = {
     },
     resolve: {
         alias: {
-            'jquery$': resolvePath('static/bower_components/jquery/dist/jquery.js'),
-            'semantic-ui$': resolvePath('static/bower_components/semantic-ui/dist/semantic.min.js'),
-            'styles': resolvePath('static/css'),
-            'toastr': resolvePath('static/bower_components/toastr'),
-            'sweetalert': resolvePath('static/bower_components/sweetalert/lib'),
-            'underscore': resolvePath('static/bower_components/underscore/underscore-min.js'),
-            'underscore.string': resolvePath('static/bower_components/underscore.string/dist/underscore.string.min.js'),
-            'moment': resolvePath('static/bower_components/moment/min/moment.min.js'),
+            'riotjs$': resolvePath('node_modules/riot/riot.js'),
+            'semantic-ui': resolvePath('vendors/semantic/dist'),
+            'riot-bus': 'js/riot-bus.js',
+            'config': 'js/config.js',
+            'pagination': 'js/pagination.js',
+            'wurl': resolvePath('node_modules/wurl/wurl.js')
         },
         root: '.',
     },
@@ -42,7 +40,9 @@ module.exports = {
         ],
         loaders: [
             { test: /\.css$/, loader: "style!css" },
+            { test: /\.json/, loader: "json-loader" },
             { test: /\.(png|gif)$/, loader: "url-loader?limit=100000" },
+            { test: /\.(ttf|eot|woff|woff2|svg)$/, loader: "file-loader" },
         ]
     },
 };
