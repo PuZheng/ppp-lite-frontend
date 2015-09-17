@@ -2,5 +2,8 @@
 
 ## quick start
 
-npm install
-gulp
+```
+$ npm install
+$ gulp
+```
+then open http://127.0.0.1:8080
