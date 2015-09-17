@@ -1,11 +1,25 @@
-riot = require('riotjs');
-require('./riot-bus.js');
+var riot = require('riotjs');
+require('../vendors/semantic/dist/semantic.css');
+require('semantic-ui/semantic.min.js');
+
+var bus = require('riot-bus');
+var ProjectListStore = require('./stores/project-list.js');
+
+require('./tags/project-list-app.tag');
+
+bus.register(new ProjectListStore());
+
+var projectListApp;
 
 var router = function (app) {
 
     switch (app) {
         case 'list': {
-            console.log('list hit');
+            projectListApp = projectListApp || riot.mount('.container', 'project-list-app');
+            bus.trigger('projectList.fetch', {
+                page: 1,
+                per_page: 16
+            });
             break;
         }
         default: {

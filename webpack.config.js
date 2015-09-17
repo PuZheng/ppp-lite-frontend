@@ -16,7 +16,10 @@ module.exports = {
     },
     resolve: {
         alias: {
-            'riotjs$': resolvePath('node_modules/riot/riot.min.js'),
+            'riotjs$': resolvePath('node_modules/riot/riot.js'),
+            'semantic-ui': resolvePath('vendors/semantic/dist'),
+            'riot-bus': 'js/riot-bus.js',
+            'config': 'js/config.js',
         },
         root: '.',
     },
@@ -35,7 +38,9 @@ module.exports = {
         ],
         loaders: [
             { test: /\.css$/, loader: "style!css" },
+            { test: /\.json/, loader: "json-loader" },
             { test: /\.(png|gif)$/, loader: "url-loader?limit=100000" },
+            { test: /\.(ttf|eot|woff|woff2|svg)$/, loader: "file-loader" },
         ]
     },
 };

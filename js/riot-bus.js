@@ -25,4 +25,16 @@ RiotBus.prototype.trigger = function (event) {
     });
 };
 
-var riotBus = new RiotBus();
+RiotBus.prototype.Mixin = {
+    init: function () {
+        var self = this;
+        this.on('mount', function () {
+            bus.register(self);
+        }).on('unmount', function () {
+            bus.unregistered(self);
+        });
+    }
+};
+
+var bus = new RiotBus();
+module.exports = bus;

@@ -34,7 +34,7 @@ gulp.task('webpack:build', function(callback) {
 gulp.task('webpack:build-dev', function(callback) {
     // modify some webpack config options
     var myDevConfig = Object.create(webpackConfig);
-    myDevConfig.devtool = 'sourcemap';
+    myDevConfig.devtool = 'source-map';
     myDevConfig.debug = true;
 
     // create a single instance of the compiler to allow caching
@@ -80,4 +80,4 @@ gulp.task('watch', function () {
     gulp.watch(['js/config.js.tmpl', 'convict-def.js'], ['template-compile']);
 });
 
-gulp.task('default', ['watch', 'webpack-dev-server']);
+gulp.task('default', ['template-compile', 'watch', 'webpack-dev-server']);
