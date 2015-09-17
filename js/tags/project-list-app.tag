@@ -18,6 +18,12 @@ var url = require('wurl');
           <div class="meta">
             { projectType.name }
           </div>
+          <div class="tags">
+            <div class="ui yellow icon label">
+              <i class="ui icon yen"></i>
+              { parseInt(budget / 10000) } 万元
+            </div>
+          </div>
           <div class="description">
             { description }
           </div>
