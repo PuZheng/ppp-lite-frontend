@@ -16,14 +16,7 @@ module.exports = {
     },
     resolve: {
         alias: {
-            'jquery$': resolvePath('static/bower_components/jquery/dist/jquery.js'),
-            'semantic-ui$': resolvePath('static/bower_components/semantic-ui/dist/semantic.min.js'),
-            'styles': resolvePath('static/css'),
-            'toastr': resolvePath('static/bower_components/toastr'),
-            'sweetalert': resolvePath('static/bower_components/sweetalert/lib'),
-            'underscore': resolvePath('static/bower_components/underscore/underscore-min.js'),
-            'underscore.string': resolvePath('static/bower_components/underscore.string/dist/underscore.string.min.js'),
-            'moment': resolvePath('static/bower_components/moment/min/moment.min.js'),
+            'riotjs$': resolvePath('node_modules/riot/riot.min.js'),
         },
         root: '.',
     },
