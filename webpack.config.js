@@ -45,7 +45,8 @@ module.exports = {
             { test: /\.css$/, loader: "style!css" },
             { test: /\.json/, loader: "json-loader" },
             { test: /\.(png|gif)$/, loader: "url-loader?limit=100000" },
-            { test: /\.(ttf|eot|woff|woff2|svg)$/, loader: "file-loader" },
+            //{ test: /\.(ttf|eot|woff|woff2|svg)$/, loader: "file-loader" },
+            { test: /\.(ttf|eot|woff|woff2|svg)$/, loader: "url-loader?limit=100000" },
         ]
     },
 };

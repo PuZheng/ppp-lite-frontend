@@ -1,6 +1,6 @@
 var riot = require('riotjs');
-require('../vendors/semantic/dist/semantic.css');
-require('semantic-ui/semantic.js');
+require('semantic-ui/semantic.min.css');
+require('semantic-ui/semantic.min.js');
 
 var bus = require('riot-bus');
 var projectListStore = require('./stores/project-list.js');
