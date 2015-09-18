@@ -7,6 +7,10 @@ var url = require('wurl');
 var moment = require('moment');
 
 <project-list-app>
+  <button class="new ui green icon button" onclick={ newButtonClickHandler }>
+    <i class="icon plus"></i>
+    新建
+  </button>
   <loader if={ loading }></loader>
   <div class="ui six column grid">
     <div class="ui column" each={ projects }>
@@ -72,12 +76,16 @@ var moment = require('moment');
       self.pagination.urlFor = function (page) {
         var query = url('?', url('hash')) || {};
         query.page = page;
-        return '#project/list?' + _.pairs(query).map(function (pair) {
+        return '#project/project-list?' + _.pairs(query).map(function (pair) {
           return pair.join('=');
         }).join('&');
       };
       self.moment = moment; // otherwise, tag can't access moment
       self.update();
     });
+
+    this.newButtonClickHandler = function (e) {
+      riot.route('project/project-object?backref=' + encodeURIComponent('#' + url('hash')));
+    }
   </script>
 </project-list-app>

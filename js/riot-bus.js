@@ -31,7 +31,7 @@ RiotBus.prototype.Mixin = {
         this.on('mount', function () {
             bus.register(self);
         }).on('unmount', function () {
-            bus.unregistered(self);
+            bus.unregister(self);
         });
     }
 };
