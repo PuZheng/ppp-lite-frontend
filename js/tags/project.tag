@@ -21,19 +21,19 @@ require('./project-type-selector.tag');
     <div class="ui attached segment">
       <form class="ui form" target="#" action="POST">
         <div class="required field">
-          <label for="">名称</label>
+          <label for="">名称{ project && "(敲击回车修改内容)" }</label>
           <input type="text" name="name" placeholder="请输入名称..." autofocus value={ project && project.name } onblur={ project && doUpdate['name'] }
           onkeypress={ project && makeMeBlurWhen('enter') }
           >
         </div>
         <div class="required field">
-          <label for="">初步预算(单位: 元)</label>
+          <label for="">初步预算(单位: 元, { project && "敲击回车修改内容" })</label>
           <input type="number" name="budget" placeholder="请输入预算..." step=1 value={ project && project.budget } onblur={ project && doUpdate['budget'] }
           onkeypress={ project && makeMeBlurWhen('enter') }
           >
         </div>
         <div class="required field">
-          <label for="">概述(256字)</label>
+          <label for="">概述(256字{ project && ", 敲击ctrl+回车修改内容" })</label>
           <textarea name="description" cols="30" rows="10" placeholder="请输入概述..." onblur={ project && doUpdate['description'] }
             onkeypress={ project && makeMeBlurWhen('c-enter') }
             >
