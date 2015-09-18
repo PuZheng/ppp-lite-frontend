@@ -1,10 +1,12 @@
 var riot = require('riot');;
 <project-type-selector>
-  <loader if={ !projectTypes.length }></loader>
+  <div class="basic ui segment">
+    <loader if={ !projectTypes.length }></loader>
+  </div>
   <div class="ui selection dropdown" show={ projectTypes.length }>
-    <input type="hidden" name="gender">
+    <input type="hidden" name="gender" value={ id }>
     <i class="dropdown icon"></i>
-    <div class="default text">项目类型</div>
+    <div class="default text">选择项目类型</div>
     <div class="menu">
       <div class="item" each={ projectTypes } data-value="{ id }">{ name }</div>
     </div>
@@ -14,6 +16,7 @@ var riot = require('riot');;
     var self = this;
     self.projectTypes = [];
     self.on('update', function () {
+      self.id = self.opts['id'];
       if (!_.isEmpty(this.opts['project-types'])) {
         self.projectTypes = this.opts['project-types'];
         $(self.root).find('.dropdown').dropdown({

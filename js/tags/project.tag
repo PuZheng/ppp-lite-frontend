@@ -8,8 +8,8 @@ require('./project-type-selector.tag');
 
 <project-app>
 
-  <loader if={ loading }></loader>
   <div class="ui basic segment">
+    <loader if={ loading }></loader>
     <div class="ui top attached green message">
       <span if={ project }>编辑</span>
       <span if={ !project }>创建</span>
@@ -20,19 +20,22 @@ require('./project-type-selector.tag');
       <form class="ui form" target="#" action="POST">
         <div class="required field">
           <label for="">名称</label>
-          <input type="text" name="name" placeholder="请输入名称..." autofocus>
+          <input type="text" name="name" placeholder="请输入名称..." autofocus value={ project && project.name }>
         </div>
         <div class="required field">
           <label for="">初步预算(单位: 元)</label>
-          <input type="number" name="budget" placeholder="请输入预算..." step=1>
+          <input type="number" name="budget" placeholder="请输入预算..." step=1 value={ project && project.budget }>
         </div>
         <div class="required field">
           <label for="">概述(256字)</label>
-          <textarea name="description" cols="30" rows="10" placeholder="请输入概述..."></textarea>
+          <textarea name="description" cols="30" rows="10" placeholder="请输入概述...">
+            { project && project.description }
+          </textarea>
         </div>
         <div class="field">
           <label for="">项目类型</label>
-          <project-type-selector project-types={ projectTypes }></project-type-selector>
+          <div class="project-type-selector">
+          </div>
         </div>
         <hr>
         <button class="ui green button" type="submit">提交</button>
@@ -87,11 +90,17 @@ require('./project-type-selector.tag');
       on: 'blur',
     };
 
-    self.on('projectTypeList.fetched', function (data) {
-      self.projectTypes = data.data;
-      self.update();
-    });
+    if (id) {
+      self.on('project.fetching', function () {
+        self.loading = true;
+        self.update();
+      }).on('project.fetched', function (project) {
+        self.loading = false;
+        self.project = project;
+        self.update();
 
+      });
+    }
     self.on('mount', function () {
       $('form.form').form(formOpts).on('submit', function () {
         self.loading = true;
