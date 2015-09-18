@@ -21,7 +21,8 @@ module.exports = {
             'riot-bus': 'js/riot-bus.js',
             'config': 'js/config.js',
             'pagination': 'js/pagination.js',
-            'wurl': resolvePath('node_modules/wurl/wurl.js')
+            'wurl': resolvePath('node_modules/wurl/wurl.js'),
+            'moment': resolvePath('node_modules/moment/moment.js'),
         },
         root: '.',
     },

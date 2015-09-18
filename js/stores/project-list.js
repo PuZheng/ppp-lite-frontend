@@ -15,6 +15,9 @@ function ProjectListStore() {
             return p[0] + '=' + p[1];
         }).join('&')).done(function (data) {
             self.data = data.data;
+            self.data.forEach(function (row) {
+                row.createdAt = new Date(row.createdAt);
+            });
             self.totalCount = data.totalCount;
             bus.trigger('projectList.fetched', self);
         });

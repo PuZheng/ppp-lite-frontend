@@ -4,6 +4,7 @@ require('./loader.tag');
 require('./paginator.tag');
 var Pagination = require('pagination');
 var url = require('wurl');
+var moment = require('moment');
 
 <project-list-app>
   <loader if={ loading }></loader>
@@ -17,15 +18,17 @@ var url = require('wurl');
           </div>
           <div class="meta">
             { projectType.name }
+            <span>-</span>
+            { moment(createdAt).format('l') }
           </div>
           <div class="tags">
             <div class="ui yellow icon label">
-              <i class="ui icon yen"></i>
+              <i class="ui tiny icon yen"></i>
               { parseInt(budget / 10000) } 万元
             </div>
           </div>
           <div class="description">
-            { description }
+            { description.length > 64? description.substr(0, 64) + '...': description }
           </div>
         </div>
         <div class="extra content">
@@ -40,7 +43,8 @@ var url = require('wurl');
   <paginator if={ pagination } pagination={ pagination }></paginator>
   <style scoped>
     .card {
-      height: 16rem;
+      min-height: 16rem;
+      width: 100%;
     }
   </style>
   <script>
@@ -72,6 +76,7 @@ var url = require('wurl');
           return pair.join('=');
         }).join('&');
       };
+      self.moment = moment; // otherwise, tag can't access moment
       self.update();
     });
   </script>
