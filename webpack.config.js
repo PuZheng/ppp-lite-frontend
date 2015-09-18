@@ -24,6 +24,7 @@ module.exports = {
             'wurl': resolvePath('node_modules/wurl/wurl.js'),
             'moment': resolvePath('node_modules/moment/moment.js'),
             'sweetalert': resolvePath('node_modules/sweetalert/dist/'),
+            'toastr': resolvePath('node_modules/toastr/build/'),
         },
         root: '.',
     },

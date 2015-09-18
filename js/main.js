@@ -54,14 +54,19 @@ var router = function (app, view) {
                         params = arguments[3];
                     }
                 }
-                var stores = [];
-                id && stores.push(projectStore);
-                switchApp('project-app', stores, {
+                switchApp('project-app', [ projectTypeListStore, projectStore ], {
                     backref: params.backref? decodeURIComponent(params.backref): 'project/project-list',
                     id: id,
                 });
-                bus.trigger('projectTypeList.fetch');
-                id && bus.trigger('project.fetch', id);
+                (function (cb) {
+                    if (id) {
+                        projectStore.fetch(id).done(cb);
+                    } else {
+                        cb();
+                    }
+                })(function () {
+                    projectTypeListStore.fetch();
+                });
             }
             break;
         }

@@ -2,6 +2,8 @@ var riot = require('riot');
 var bus = require('riot-bus');
 var config = require('config');
 var swal = require('sweetalert/sweetalert.min.js');
+var toastr = require('toastr/toastr.min.js');
+require('toastr/toastr.min.css');
 require('sweetalert/sweetalert.css');
 require('./project-type-selector.tag');
 
@@ -20,25 +22,30 @@ require('./project-type-selector.tag');
       <form class="ui form" target="#" action="POST">
         <div class="required field">
           <label for="">名称</label>
-          <input type="text" name="name" placeholder="请输入名称..." autofocus value={ project && project.name }>
+          <input type="text" name="name" placeholder="请输入名称..." autofocus value={ project && project.name } onblur={ project && doUpdate['name'] }
+          onkeypress={ project && makeMeBlurWhen('enter') }
+          >
         </div>
         <div class="required field">
           <label for="">初步预算(单位: 元)</label>
-          <input type="number" name="budget" placeholder="请输入预算..." step=1 value={ project && project.budget }>
+          <input type="number" name="budget" placeholder="请输入预算..." step=1 value={ project && project.budget } onblur={ project && doUpdate['budget'] }
+          onkeypress={ project && makeMeBlurWhen('enter') }
+          >
         </div>
         <div class="required field">
           <label for="">概述(256字)</label>
-          <textarea name="description" cols="30" rows="10" placeholder="请输入概述...">
+          <textarea name="description" cols="30" rows="10" placeholder="请输入概述..." onblur={ project && doUpdate['description'] }
+            onkeypress={ project && makeMeBlurWhen('c-enter') }
+            >
             { project && project.description }
           </textarea>
         </div>
         <div class="field">
           <label for="">项目类型</label>
-          <div class="project-type-selector">
-          </div>
+          <project-type-selector id={ project && project.projectTypeId } project-id={ project && project.id }></project-type-selector>
         </div>
         <hr>
-        <button class="ui green button" type="submit">提交</button>
+        <button class="ui green button" type="submit" if={ !project }>提交</button>
         <a href="{ opts.backref }" class="ui button">返回</a>
       </form>
     </div>
@@ -88,62 +95,99 @@ require('./project-type-selector.tag');
       },
       inline: true,
       on: 'blur',
+      keyboardShortcuts: false,
     };
 
-    if (id) {
-      self.on('project.fetching', function () {
-        self.loading = true;
-        self.update();
-      }).on('project.fetched', function (project) {
-        self.loading = false;
-        self.project = project;
-        self.update();
-
+    self.on('project.fetching project.saving project.updating', function () {
+      self.loading = true;
+      self.update();
+    }).on('project.fetched', function (project) {
+      self.loading = false;
+      self.project = project;
+      self.update();
+    }).on('project.saved', function (project) {
+      self.loading = false;
+      self.project = project;
+      self.update();
+      swal({
+        type: 'success',
+        title: '成功创建',
+        cancelButtonText: '返回上级',
+        showConfirmButton: true,
+        showCancelButton: true,
+        confirmButtonText: '继续编辑',
+      }, function (confirmed) {
+        if (confirmed) {
+          riot.route('project/project-object/' + self.project.id + '?backref=' + encodeURIComponent(self.opts.backref));
+        } else {
+          riot.route(self.opts.backref.replace(/^#/, ''));
+        }
       });
-    }
-    self.on('mount', function () {
+    }).on('project.updated', function (data) {
+      self.loading = false;
+      _.extend(self.project, data);
+      self.update();
+      toastr.success('更新成功！', '', {
+        positionClass: 'toast-bottom-center',
+        timeOut: 1000,
+      });
+    }).on('mount', function () {
       $('form.form').form(formOpts).on('submit', function () {
         self.loading = true;
         self.update();
-
-        var data = {
-            name: this.name.value,
-            budget: this.budget.value,
-            description: this.description.value,
-            project_type_id: self.tags['project-type-selector'].val(),
-        };
-        $.ajax({
-          url: config.backend + '/project/project-object',
-          type: 'POST',
-          data: JSON.stringify(data),
-          contentType: 'application/json; charset=UTF-8',
-          dastaType: 'json',
-        }).done(function (data) {
-          swal({
-            type: 'success',
-            title: '成功创建',
-            cancelButtonText: '返回上级',
-            showConfirmButton: true,
-            showCancelButton: true,
-            confirmButtonText: '继续编辑该项目',
-          }, function (confirmed) {
-            if (confirmed) {
-              riot.route('project/project-object/' + data.id + '?backref=' + encodeURIComponent(self.opts.backref));
-            } else {
-              riot.route(self.opts.backref.replace(/^#/, ''));
-            }
-          });
-        }).fail(function () {
-          swal({
-            type: 'error',
-            title: '出错了',
-          });
-        }).always(function () {
-          self.loading = false;
-          self.update();
+        bus.trigger('project.save', {
+            name: self.name.value,
+            budget: self.budget.value,
+            description: self.description.value,
+            projectTypeId: self.tags['project-type-selector'].val(),
         });
         return false;
       });
     });
+    self.doUpdate = {};
+    ['name', 'budget', 'description'].forEach(function (field) {
+      self.doUpdate[field] = function (field) {
+        return function (e) {
+          var d = {};
+          d[field] = self[field].value;
+          self.updateModel(d);
+        };
+      }(field);
+    });
+    self.updateModel = function (data) {
+      var committedValue = self.committedValue();
+      for (var k in data) {
+        var val = data[k];
+        (val == committedValue[k]) && delete data[k]; // note! use '==' intentionally
+      }
+      if (!$.isEmptyObject(data)) {
+        bus.trigger('project.update', self.project.id, data)
+      }
+    };
+    self.committedValue = function () {
+      return {
+        name: self.project.name,
+        budget: self.project.budget,
+        description: self.project.description,
+        project_type_id: self.project.projectTypeId,
+      };
+    }
+    self.makeMeBlurWhen = function (test) {
+      var test = {
+        'enter': function (e) {
+          return e.which === 13;
+        },
+        'c-enter': function (e) {
+          return (e.which === 13 || e.which === 10) && e.ctrlKey;
+        }
+      }[test];
+      return function (e) {
+        if (test(e)) {
+          $(e.target).blur();
+          return false;
+        }
+        return true;
+      }
+    };
   </script>
 </project-app>
