@@ -11,7 +11,7 @@ function ProjectListStore() {
         self.perPage = params.per_page;
         bus.trigger('projectList.fetching');
         params = params || {};
-        $.getJSON(config.backend + '/project/list.json?' + _.pairs(params).map(function (p) {
+        $.getJSON(config.backend + '/project/project-list.json?' + _.pairs(params).map(function (p) {
             return p[0] + '=' + p[1];
         }).join('&')).done(function (data) {
             self.data = data.data;
@@ -25,4 +25,4 @@ function ProjectListStore() {
 }
 
 
-module.exports = ProjectListStore;
+module.exports = new ProjectListStore();

@@ -9,6 +9,9 @@ config.output.publicPath = 'http://127.0.0.1:8080/js/bundle';
 config.devtool = "eval";
 config.debug = true;
 config.plugins = config.plugins || [];
+config.devServer = {
+    contentBase: "./",
+};
 
 config.plugins.push(new webpack.HotModuleReplacementPlugin());
 module.exports = config;
