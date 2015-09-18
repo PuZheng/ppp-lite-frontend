@@ -14,7 +14,7 @@ var moment = require('moment');
   <loader if={ loading }></loader>
   <div class="ui six column grid">
     <div class="ui column" each={ projects }>
-      <div class="ui card">
+      <a class="ui card" data-id={ id } onclick={ cardClickHandler }>
         <div class="content">
           <i class="right floated big blue icon { \{ '文教卫': 'university', '交通': 'road', '政法': 'legal', '水利': 'fork', '市政基础设施建设': 'building' \}[projectType.name] }"></i>
           <div class="header">
@@ -35,13 +35,13 @@ var moment = require('moment');
             { description.length > 64? description.substr(0, 64) + '...': description }
           </div>
         </div>
-        <div class="extra content">
-          <div class="ui two buttons">
-            <div class="ui basic green button">详情</div>
-            <div class="ui basic red button">删除</div>
-          </div>
-        </div>
-      </div>
+        <!--<div class="extra content">-->
+          <!--<div class="ui two buttons">-->
+            <!--<div class="ui basic green button">详情</div>-->
+            <!--<div class="ui basic red button">删除</div>-->
+          <!--</div>-->
+        <!--</div>-->
+      </a>
     </div>
   </div>
   <paginator if={ pagination } pagination={ pagination }></paginator>
@@ -86,6 +86,10 @@ var moment = require('moment');
 
     this.newButtonClickHandler = function (e) {
       riot.route('project/project-object?backref=' + encodeURIComponent('#' + url('hash')));
+    }
+
+    this.cardClickHandler = function (e) {
+      riot.route('project/project-object/' + $(e.currentTarget).data('id') + '?backref=' + encodeURIComponent('#' + url('hash')));
     }
   </script>
 </project-list-app>

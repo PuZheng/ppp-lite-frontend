@@ -2,7 +2,6 @@ function RiotBus() {
 
     this._observables = [];
 
-
 }
 
 RiotBus.prototype.register = function (observable) {
@@ -20,6 +19,7 @@ RiotBus.prototype.unregister = function (observable) {
 RiotBus.prototype.trigger = function (event) {
 
     var args = Array.prototype.slice.apply(arguments);
+    console.log('trigger ', args);
     this._observables.forEach(function (o) {
         o.trigger.apply(o, args);
     });

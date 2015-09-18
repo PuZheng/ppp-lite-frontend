@@ -5,6 +5,7 @@ require('semantic-ui/semantic.js');
 var bus = require('riot-bus');
 var projectListStore = require('./stores/project-list.js');
 var projectTypeListStore = require('./stores/project-type-list.js');
+var projectStore = require('./stores/project.js');
 
 require('./tags/project-list-app.tag');
 require('./tags/project.tag');
@@ -32,18 +33,40 @@ var router = function (app, view) {
 
     switch (app) {
         case 'project': {
+            var params;
             if (view === 'project-list') {
-                var params = arguments[2];
+                params = arguments[2];
                 switchApp('project-list-app', [projectListStore]);
                 bus.trigger('projectList.fetch', {
                     page: parseInt(params.page) || 1,
                     per_page: 18
                 });
             } else if (view === 'project-object') {
-                switchApp('project-app', [projectTypeListStore], {
-                    backref: arguments[2].backref? decodeURIComponent(arguments[2].backref): 'project/project-list',
+                params = {};
+                var id;
+                switch (arguments.length) {
+                    case 3: {
+                        params = arguments[2];
+                        break;
+                    }
+                    case 4: {
+                        id = arguments[2];
+                        params = arguments[3];
+                    }
+                }
+                switchApp('project-app', [ projectTypeListStore, projectStore ], {
+                    backref: params.backref? decodeURIComponent(params.backref): 'project/project-list',
+                    id: id,
                 });
-                bus.trigger('projectTypeList.fetch');
+                (function (cb) {
+                    if (id) {
+                        projectStore.fetch(id).done(cb);
+                    } else {
+                        cb();
+                    }
+                })(function () {
+                    projectTypeListStore.fetch();
+                });
             }
             break;
         }
