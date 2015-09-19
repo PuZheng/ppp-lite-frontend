@@ -5,6 +5,8 @@ require('./paginator.tag');
 var Pagination = require('pagination');
 var url = require('wurl');
 var moment = require('moment');
+var swal = require('sweetalert/sweetalert.min.js');
+require('sweetalert/sweetalert.css');
 
 <project-list-app>
   <button class="new ui green icon button" onclick={ newButtonClickHandler }>
@@ -14,7 +16,10 @@ var moment = require('moment');
   <loader if={ loading }></loader>
   <div class="ui six column grid">
     <div class="ui column" each={ projects }>
-      <a class="ui card" data-id={ id } onclick={ cardClickHandler }>
+      <a class="ui card" data-id={ id } onclick={ cardClickHandler } >
+        <div class="ui bottom right corner label">
+          <i class="delete icon" onclick={ deleteHandler } data-project-id={ id }></i>
+        </div>
         <div class="content">
           <i class="right floated big blue icon { \{ '文教卫': 'university', '交通': 'road', '政法': 'legal', '水利': 'fork', '市政基础设施建设': 'building' \}[projectType.name] }"></i>
           <div class="header">
@@ -82,14 +87,35 @@ var moment = require('moment');
       };
       self.moment = moment; // otherwise, tag can't access moment
       self.update();
+    }).on('project.deleting', function () {
+      self.loading = true;
+      self.update();
+    }).on('project.deleted', function (id) {
+      self.loading = false;
+      self.projects = self.projects.filter(function (p) {
+        return p.id != id;
+      })
+      self.update();
     });
 
     this.newButtonClickHandler = function (e) {
       riot.route('project/project-object?backref=' + encodeURIComponent('#' + url('hash')));
-    }
+    };
 
     this.cardClickHandler = function (e) {
       riot.route('project/project-object/' + $(e.currentTarget).data('id') + '?backref=' + encodeURIComponent('#' + url('hash')));
-    }
+    };
+
+    this.deleteHandler = function (e) {
+      e.stopPropagation();
+
+      swal({
+        type: 'warning',
+        title: '您确认要删除该项目?',
+        showCancelButton: true,
+      }, function (confirmed) {
+        confirmed && bus.trigger('project.delete', $(e.target).data('project-id'));
+      });
+    };
   </script>
 </project-list-app>

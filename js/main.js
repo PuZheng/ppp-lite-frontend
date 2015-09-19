@@ -36,7 +36,7 @@ var router = function (app, view) {
             var params;
             if (view === 'project-list') {
                 params = arguments[2];
-                switchApp('project-list-app', [projectListStore]);
+                switchApp('project-list-app', [projectListStore, projectStore]);
                 bus.trigger('projectList.fetch', {
                     page: parseInt(params.page) || 1,
                     per_page: 18
