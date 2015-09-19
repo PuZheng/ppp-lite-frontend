@@ -45,8 +45,9 @@ require('./project-type-selector.tag');
           <project-type-selector id={ project && project.projectTypeId } project-id={ project && project.id }></project-type-selector>
         </div>
         <hr>
-        <button class="ui green button" type="submit" if={ !project }>提交</button>
         <a href="{ opts.backref }" class="ui button">返回</a>
+        <button class="ui green button" type="submit" if={ !project }>提交</button>
+        <button class="delete ui red button" if={ project } onclick={ deleteHandler }>删除</button>
       </form>
     </div>
   </div>
@@ -143,6 +144,18 @@ require('./project-type-selector.tag');
         });
         return false;
       });
+    }).on('project.deleting', function () {
+      self.loading = true;
+      self.update();
+    }).on('project.deleted', function () {
+      self.loading = false;
+      self.update();
+      swal({
+        type: 'success',
+        title: '该项目已删除!',
+      }, function () {
+        riot.route(self.opts.backref.replace(/^#/, ''));
+      });
     });
     self.doUpdate = {};
     ['name', 'budget', 'description'].forEach(function (field) {
@@ -189,5 +202,18 @@ require('./project-type-selector.tag');
         return true;
       }
     };
+    self.deleteHandler = function (e) {
+      e.stopPropagation();
+
+      swal({
+        type: 'warning',
+        title: '您确认要删除该项目?',
+        showCancelButton: true,
+        closeOnConfirm: false,
+      }, function (confirmed) {
+        confirmed && bus.trigger('project.delete', self.project.id);
+      });
+    }
+
   </script>
 </project-app>

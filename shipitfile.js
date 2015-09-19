@@ -1,17 +1,5 @@
-var q = require('q');
-
 module.exports = function (shipit) {
     shipit.initConfig({
-        default: {
-            workspace: '/tmp/github-monitor',
-            deployTo: '/home/xiechao/ppp-lite-frontend',
-            repositoryUrl: 'git@github.com:PuZheng/ppp-lite-frontend.git',
-            ignores: ['.git', 'node_modules'],
-            keepReleases: 2,
-            deleteOnRollback: false,
-            shallowClone: true,
-            branch: 'master',
-        },
         staging: {
             servers: {
                 host: '115.29.232.202',
