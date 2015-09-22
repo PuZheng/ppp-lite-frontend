@@ -25,13 +25,14 @@ module.exports = {
             'moment': resolvePath('node_modules/moment/moment.js'),
             'sweetalert': resolvePath('node_modules/sweetalert/dist/'),
             'toastr': resolvePath('node_modules/toastr/build/'),
+            'lodash': resolvePath('node_modules/lodash/index.js'),
         },
         root: '.',
     },
     plugins: [
         new webpack.ProvidePlugin({
            $: "jquery",
-           _: "underscore",
+           _: "lodash",
            jQuery: "jquery",
            'window.jQuery': 'jquery',
         }),

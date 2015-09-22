@@ -6,6 +6,7 @@ var bus = require('riot-bus');
 var projectListStore = require('./stores/project-list.js');
 var projectTypeListStore = require('./stores/project-type-list.js');
 var projectStore = require('./stores/project.js');
+var tagStore = require('./stores/tag.js');
 
 require('./tags/project-list-app.tag');
 require('./tags/project.tag');
@@ -13,8 +14,9 @@ require('./tags/project.tag');
 var switchApp = function () {
     var currentApp;
     var currentStores = [];
-    return function (tagName, stores, opts) {
-        if (!currentApp || currentApp.opts['riot-tag'] != tagName) {
+    var currentToken;
+    return function (tagName, stores, opts, token) {
+        if (!currentApp || currentApp.opts['riot-tag'] != tagName || token != currentToken) {
             currentApp = riot.mount('#main', tagName, opts)[0];
             currentStores.forEach(function (store) {
                 bus.unregister(store);
@@ -54,10 +56,10 @@ var router = function (app, view) {
                         params = arguments[3];
                     }
                 }
-                switchApp('project-app', [ projectTypeListStore, projectStore ], {
+                switchApp('project-app', [ projectTypeListStore, projectStore, tagStore ], {
                     backref: params.backref? decodeURIComponent(params.backref): 'project/project-list',
                     id: id,
-                });
+                }, id);
                 (function (cb) {
                     if (id) {
                         projectStore.fetch(id).done(cb);
@@ -66,6 +68,7 @@ var router = function (app, view) {
                     }
                 })(function () {
                     projectTypeListStore.fetch();
+                    tagStore.fetchAll();
                 });
             }
             break;
