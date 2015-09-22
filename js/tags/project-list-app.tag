@@ -40,12 +40,9 @@ require('sweetalert/sweetalert.css');
             { description.length > 64? description.substr(0, 64) + '...': description }
           </div>
         </div>
-        <!--<div class="extra content">-->
-          <!--<div class="ui two buttons">-->
-            <!--<div class="ui basic green button">详情</div>-->
-            <!--<div class="ui basic red button">删除</div>-->
-          <!--</div>-->
-        <!--</div>-->
+        <div class="extra content">
+          <span class="ui red label" each={ tags }>{ value }</span>
+        </div>
       </a>
     </div>
   </div>
@@ -54,6 +51,9 @@ require('sweetalert/sweetalert.css');
     .card {
       min-height: 16rem;
       width: 100%;
+    }
+    .card .ui.label {
+      margin-left: 0;
     }
   </style>
   <script>

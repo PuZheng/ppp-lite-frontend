@@ -6,6 +6,7 @@ var toastr = require('toastr/toastr.min.js');
 require('toastr/toastr.min.css');
 require('sweetalert/sweetalert.css');
 require('./project-type-selector.tag');
+require('./tag-editor.tag');
 
 
 <project-app>
@@ -43,6 +44,10 @@ require('./project-type-selector.tag');
         <div class="field">
           <label for="">项目类型</label>
           <project-type-selector id={ project && project.projectTypeId } project-id={ project && project.id }></project-type-selector>
+        </div>
+        <div class="field">
+          <label for="">标签</label>
+          <tag-editor project-id={ project && project.id } tags="{ project && JSON.stringify(project.tags) }"></tag-editor>
         </div>
         <hr>
         <a href="{ opts.backref }" class="ui button">返回</a>
@@ -141,6 +146,7 @@ require('./project-type-selector.tag');
             budget: self.budget.value,
             description: self.description.value,
             projectTypeId: self.tags['project-type-selector'].val(),
+            tags: self.tags['tag-editor'].val()
         });
         return false;
       });

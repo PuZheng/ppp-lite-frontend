@@ -6,6 +6,7 @@ function ProjectTypeListStore() {
     riot.observable(this);
 
     this.on('projectTypeList.fetch', function () {
+        this.fetch();
     });
 }
 
