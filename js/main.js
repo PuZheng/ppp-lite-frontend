@@ -3,8 +3,8 @@ require('semantic-ui/semantic.min.css');
 require('semantic-ui/semantic.min.js');
 
 var bus = require('riot-bus');
-var projectListStore = require('./stores/project-list.js');
-var projectTypeListStore = require('./stores/project-type-list.js');
+
+var projectTypeStore = require('./stores/project-type.js');
 var projectStore = require('./stores/project.js');
 var tagStore = require('./stores/tag.js');
 
@@ -38,7 +38,7 @@ var router = function (app, view) {
             var params;
             if (view === 'project-list') {
                 params = arguments[2];
-                switchApp('project-list-app', [projectListStore, projectStore]);
+                switchApp('project-list-app', [projectStore]);
                 bus.trigger('projectList.fetch', {
                     page: parseInt(params.page) || 1,
                     per_page: 18
@@ -56,7 +56,7 @@ var router = function (app, view) {
                         params = arguments[3];
                     }
                 }
-                switchApp('project-app', [ projectTypeListStore, projectStore, tagStore ], {
+                switchApp('project-app', [ projectTypeStore, projectStore, tagStore ], {
                     backref: params.backref? decodeURIComponent(params.backref): 'project/project-list',
                     id: id,
                 }, id);
@@ -67,7 +67,7 @@ var router = function (app, view) {
                         cb();
                     }
                 })(function () {
-                    projectTypeListStore.fetch();
+                    projectTypeStore.fetchAll();
                     tagStore.fetchAll();
                 });
             }
