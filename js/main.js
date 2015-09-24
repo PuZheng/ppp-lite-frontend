@@ -7,9 +7,30 @@ var projectListStore = require('./stores/project-list.js');
 var projectTypeListStore = require('./stores/project-type-list.js');
 var projectStore = require('./stores/project.js');
 var tagStore = require('./stores/tag.js');
+var authStore = require('./stores/auth.js');
+
+var LoginRequired = require('./mixins/login-required.js');
 
 require('./tags/project-list-app.tag');
 require('./tags/project.tag');
+require('./tags/login.tag');
+
+var workspace = {};
+riot.observable(workspace);
+bus.register(workspace);
+
+workspace.on('loginRequired', function () {
+    riot.route('auth/login?backref=' + window.location.hash);
+});
+
+var loginRequired = function (f) {
+    if (authStore.authenticated()) {
+        return f;
+    } else {
+        bus.trigger('loginRequired');
+    }
+};
+
 
 var switchApp = function () {
     var currentApp;
@@ -17,7 +38,7 @@ var switchApp = function () {
     var currentToken;
     return function (tagName, stores, opts, token) {
         if (!currentApp || currentApp.opts['riot-tag'] != tagName || token != currentToken) {
-            currentApp = riot.mount('#main', tagName, opts)[0];
+            currentApp = riot.mount('#main', tagName, opts || {})[0];
             currentStores.forEach(function (store) {
                 bus.unregister(store);
             });
@@ -38,11 +59,13 @@ var router = function (app, view) {
             var params;
             if (view === 'project-list') {
                 params = arguments[2];
-                switchApp('project-list-app', [projectListStore, projectStore]);
-                bus.trigger('projectList.fetch', {
-                    page: parseInt(params.page) || 1,
-                    per_page: 18
-                });
+                loginRequired(function () {
+                    switchApp('project-list-app', [projectListStore, projectStore]).mixin(LoginRequired);
+                    bus.trigger('projectList.fetch', {
+                        page: parseInt(params.page) || 1,
+                        per_page: 18
+                    });
+                })();
             } else if (view === 'project-object') {
                 params = {};
                 var id;
@@ -70,6 +93,12 @@ var router = function (app, view) {
                     projectTypeListStore.fetch();
                     tagStore.fetchAll();
                 });
+            }
+            break;
+        }
+        case 'auth': {
+            if (view === 'login') {
+                switchApp('login', [authStore]);
             }
             break;
         }
