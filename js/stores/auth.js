@@ -27,10 +27,12 @@ function Auth() {
 }
 
 Auth.prototype.authenticated = function () {
-    self._user = self._user || JSON.parse(sessionStorage.getItem('user'));
-    return !!self._user;
+    this._user = this._user || JSON.parse(sessionStorage.getItem('user'));
+    return !!this._user;
 };
 
-
+Auth.prototype.currentUser = function () {
+    return this._user;
+};
 
 module.exports = new Auth();

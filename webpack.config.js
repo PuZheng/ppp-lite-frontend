@@ -16,6 +16,7 @@ module.exports = {
     },
     resolve: {
         alias: {
+            'page$': resolvePath('node_modules/page/page.js'),
             'riotjs$': resolvePath('node_modules/riot/riot.js'),
             'semantic-ui': resolvePath('semantic/dist'),
             'riot-bus': 'js/riot-bus.js',

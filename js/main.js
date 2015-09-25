@@ -1,3 +1,4 @@
+var page = require('page');
 var riot = require('riotjs');
 require('semantic-ui/semantic.min.css');
 require('semantic-ui/semantic.min.js');
@@ -13,7 +14,10 @@ require('./tags/project-list-app.tag');
 require('./tags/project.tag');
 require('./tags/login.tag');
 
-var workspace = {};
+var workspace = {
+    currentApp: null,
+    currentStores: [],
+};
 riot.observable(workspace);
 bus.register(workspace);
 
@@ -21,114 +25,79 @@ workspace.on('loginRequired', function () {
     riot.route('auth/login?backref=' + window.location.hash);
 });
 
-var loginRequired = function () {
-    var d = $.Deferred();
+var loginRequired = function (ctx, next) {
     if (authStore.authenticated()) {
-        d.resolve();
+        ctx.user = authStore.currentUser();
+        next();
     } else {
         bus.trigger('loginRequired');
-        d.reject();
     }
-    return d;
 };
 
 
 var switchApp = function () {
-    var currentApp;
-    var currentStores = [];
-    var currentToken;
-    return function (tagName, stores, opts, token) {
-        if (!currentApp || currentApp.opts['riot-tag'] != tagName || token != currentToken) {
-            currentApp = riot.mount('#main', tagName, opts || {})[0];
-            currentStores.forEach(function (store) {
+    return function (tagName, stores, opts) {
+        if (!workspace.currentApp || workspace.currentApp.opts['riot-tag'] != tagName) {
+            workspace.currentApp = riot.mount('#main', tagName, opts || {})[0];
+            workspace.currentStores.forEach(function (store) {
                 bus.unregister(store);
             });
             stores.forEach(function (store) {
-                currentStores.push(store);
+                workspace.currentStores.push(store);
                 bus.register(store);
             });
         }
-        return currentApp;
+        return workspace.currentApp;
     };
 }();
 
-
-var router = function (app, view) {
-
-    var params;
-    switch (app) {
-        case 'project': {
-            if (view === 'project-list') {
-                params = arguments[2];
-                loginRequired().done(function () {
-                    switchApp('project-list-app', [projectListStore, projectStore]);
-                    bus.trigger('projectList.fetch', {
-                        page: parseInt(params.page) || 1,
-                        per_page: 18
-                    });
-                });
-            } else if (view === 'project-object') {
-                params = {};
-                var id;
-                switch (arguments.length) {
-                    case 3: {
-                        params = arguments[2];
-                        break;
-                    }
-                    case 4: {
-                        id = arguments[2];
-                        params = arguments[3];
-                    }
-                }
-                switchApp('project-app', [ projectTypeStore, projectStore, tagStore ], {
-                    backref: params.backref? decodeURIComponent(params.backref): 'project/project-list',
-                    id: id,
-                }, id);
-                (function (cb) {
-                    if (id) {
-                        projectStore.fetch(id).done(cb);
-                    } else {
-                        cb();
-                    }
-                })(function () {
-                    projectTypeStore.fetchAll();
-                    tagStore.fetchAll();
-                });
-            }
-            break;
-        }
-        case 'auth': {
-            if (view === 'login') {
-                params = arguments[2];
-                switchApp('login', [authStore], {backref: params.backref});
-            }
-            break;
-        }
-        default: {
-            riot.route('project/project-list');
-            break;
-        }
-    }
+var projectList = function (ctx, next) {
+    switchApp('project-list-app', [projectStore]);
+    bus.trigger('projectList.fetch', {
+        page: parseInt(ctx.query.page) || 1,
+        per_page: 18
+    });
 };
 
-riot.route.parser(function(path) {
-    path = path.split('?');
-    var param = {};
-    var page = path[0].split('/');
-    var qs = path[1];
-    var params = {};
+var project = function (ctx, next) {
+    switchApp('project-app', [ projectTypeStore, projectStore, tagStore ], {
+        backref: decodeURIComponent(ctx.query.backref) || '',
+    });
+    (function (cb) {
+        if (ctx.params.id) {
+            projectStore.fetch(ctx.params.id).done(cb);
+        } else {
+            cb();
+        }
+    })(function () {
+        projectTypeStore.fetchAll();
+        tagStore.fetchAll();
+    });
+
+};
+
+var login = function (ctx) {
+    switchApp('login', [authStore]);
+};
+
+page(function (ctx, next) {
+    var qs = ctx.querystring;
+    ctx.query = {};
 
     if (qs) {
         qs.split('&').forEach(function(v) {
             var c = v.split('=');
-            params[c[0]] = c[1];
+            ctx.query[c[0]] = Array.prototype.concat.apply([], c.slice(1)).join('=');
         });
     }
-
-    page.push(params);
-    return page;
+    next();
 });
 
-riot.route(router);
-riot.route.exec(router);
 
+page('/project/list', loginRequired, projectList);
+page('/project/object', loginRequired, project);
+page('/project/object/:id', loginRequired, project);
+page('/auth/login', login);
+page('/', 'project/list');
+
+page();
