@@ -67,6 +67,7 @@
     "lodash": "^3.10.1",
     "map-stream": "0.0.6",
     "moment": "^2.10.6",
+    "page": "^1.6.3",
     "require-dot-file": "^0.4.0",
     "riotjs": "^1.0.4",
     "riotjs-loader": "^1.1.3",

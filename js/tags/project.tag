@@ -7,6 +7,7 @@ require('toastr/toastr.min.css');
 require('sweetalert/sweetalert.css');
 require('./project-type-selector.tag');
 require('./tag-editor.tag');
+var page = require('page');
 
 
 <project-app>
@@ -50,7 +51,7 @@ require('./tag-editor.tag');
           <tag-editor project-id={ project && project.id } tags="{ project && JSON.stringify(project.tags) }"></tag-editor>
         </div>
         <hr>
-        <a href="{ opts.backref }" class="ui button">返回</a>
+        <a href="#" class="ui button" onclick={ back }>返回</a>
         <button class="ui green button" type="submit" if={ !project }>提交</button>
         <button class="delete ui red button" if={ project } onclick={ deleteHandler }>删除</button>
       </form>
@@ -60,6 +61,11 @@ require('./tag-editor.tag');
   <script>
     var self = this;
     self.mixin(bus.Mixin);
+
+    self.back = function () {
+      history.back();
+      return false;
+    }
 
     var formOpts = {
       fields: {
@@ -124,9 +130,9 @@ require('./tag-editor.tag');
         confirmButtonText: '继续编辑',
       }, function (confirmed) {
         if (confirmed) {
-          riot.route('project/project-object/' + self.project.id + '?backref=' + encodeURIComponent(self.opts.backref));
+          page.redirect('project/object/' + self.project.id);
         } else {
-          riot.route(self.opts.backref.replace(/^#/, ''));
+          history.back();
         }
       });
     }).on('project.updated', function (data) {
@@ -160,7 +166,7 @@ require('./tag-editor.tag');
         type: 'success',
         title: '该项目已删除!',
       }, function () {
-        riot.route(self.opts.backref.replace(/^#/, ''));
+        history.back();
       });
     });
     self.doUpdate = {};
