@@ -22,13 +22,14 @@ var workspace = {
 riot.observable(workspace);
 bus.register(workspace);
 
-workspace.on('loginRequired', function () {
-    riot.route('auth/login?backref=' + window.location.hash);
+workspace.on('loginRequired, logout.done', function () {
+    page('auth/login');
 });
 
 var loginRequired = function (ctx, next) {
     if (authStore.authenticated()) {
         ctx.user = authStore.currentUser();
+        bus.register(authStore);
         next();
     } else {
         bus.trigger('loginRequired');
