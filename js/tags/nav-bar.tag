@@ -1,4 +1,6 @@
 var riot = require('riot');
+var bus = require('riot-bus');
+var page = require('page');
 
 <nav-bar>
   <nav class="ui fixed menu inverted navbar">
@@ -41,15 +43,15 @@ var riot = require('riot');
 
   <script>
     var self = this;
+
     self.on('mount', function () {
       $(self.root).find('.ui.dropdown').dropdown({
         transition: 'drop'
       });
-
     });
 
     self.logout = function () {
-
+      bus.trigger('logout');
     }
   </script>
 </nav-bar>
