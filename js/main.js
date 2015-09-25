@@ -7,9 +7,31 @@ var bus = require('riot-bus');
 var projectTypeStore = require('./stores/project-type.js');
 var projectStore = require('./stores/project.js');
 var tagStore = require('./stores/tag.js');
+var authStore = require('./stores/auth.js');
 
 require('./tags/project-list-app.tag');
 require('./tags/project.tag');
+require('./tags/login.tag');
+
+var workspace = {};
+riot.observable(workspace);
+bus.register(workspace);
+
+workspace.on('loginRequired', function () {
+    riot.route('auth/login?backref=' + window.location.hash);
+});
+
+var loginRequired = function () {
+    var d = $.Deferred();
+    if (authStore.authenticated()) {
+        d.resolve();
+    } else {
+        bus.trigger('loginRequired');
+        d.reject();
+    }
+    return d;
+};
+
 
 var switchApp = function () {
     var currentApp;
@@ -17,7 +39,7 @@ var switchApp = function () {
     var currentToken;
     return function (tagName, stores, opts, token) {
         if (!currentApp || currentApp.opts['riot-tag'] != tagName || token != currentToken) {
-            currentApp = riot.mount('#main', tagName, opts)[0];
+            currentApp = riot.mount('#main', tagName, opts || {})[0];
             currentStores.forEach(function (store) {
                 bus.unregister(store);
             });
@@ -33,15 +55,17 @@ var switchApp = function () {
 
 var router = function (app, view) {
 
+    var params;
     switch (app) {
         case 'project': {
-            var params;
             if (view === 'project-list') {
                 params = arguments[2];
-                switchApp('project-list-app', [projectStore]);
-                bus.trigger('projectList.fetch', {
-                    page: parseInt(params.page) || 1,
-                    per_page: 18
+                loginRequired().done(function () {
+                    switchApp('project-list-app', [projectListStore, projectStore]);
+                    bus.trigger('projectList.fetch', {
+                        page: parseInt(params.page) || 1,
+                        per_page: 18
+                    });
                 });
             } else if (view === 'project-object') {
                 params = {};
@@ -70,6 +94,13 @@ var router = function (app, view) {
                     projectTypeStore.fetchAll();
                     tagStore.fetchAll();
                 });
+            }
+            break;
+        }
+        case 'auth': {
+            if (view === 'login') {
+                params = arguments[2];
+                switchApp('login', [authStore], {backref: params.backref});
             }
             break;
         }

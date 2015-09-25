@@ -26,6 +26,7 @@ module.exports = {
             'sweetalert': resolvePath('node_modules/sweetalert/dist/'),
             'toastr': resolvePath('node_modules/toastr/build/'),
             'lodash': resolvePath('node_modules/lodash/index.js'),
+            'MotionCAPTCHA': resolvePath('vendors/MotionCAPTCHA/')
         },
         root: '.',
     },
@@ -45,7 +46,7 @@ module.exports = {
         loaders: [
             { test: /\.css$/, loader: "style!css" },
             { test: /\.json/, loader: "json-loader" },
-            { test: /\.(png|gif)$/, loader: "url-loader?limit=100000" },
+            { test: /\.(png|gif|jpg)$/, loader: "url-loader?limit=100000" },
             //{ test: /\.(ttf|eot|woff|woff2|svg)$/, loader: "file-loader" },
             { test: /\.(ttf|eot|woff|woff2|svg)$/, loader: "url-loader?limit=100000" },
         ]
