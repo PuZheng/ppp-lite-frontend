@@ -87,7 +87,7 @@ var bus = require('riot-bus');
       self.update();
       $(self.root).find('form').form('add errors', reason);
     }).on('login.success', function (user) {
-      // TODO route back
+      history.back();
     });
   </script>
 </login>

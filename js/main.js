@@ -76,6 +76,10 @@ var project = function (ctx, next) {
 
 };
 
+var login = function (ctx) {
+    switchApp('login', [authStore]);
+};
+
 page(function (ctx, next) {
     var qs = ctx.querystring;
     ctx.query = {};
@@ -93,6 +97,7 @@ page(function (ctx, next) {
 page('/project/list', loginRequired, projectList);
 page('/project/object', loginRequired, project);
 page('/project/object/:id', loginRequired, project);
+page('/auth/login', login);
 page('/', 'project/list');
 
 page();
