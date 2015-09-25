@@ -9,8 +9,6 @@ var projectStore = require('./stores/project.js');
 var tagStore = require('./stores/tag.js');
 var authStore = require('./stores/auth.js');
 
-var LoginRequired = require('./mixins/login-required.js');
-
 require('./tags/project-list-app.tag');
 require('./tags/project.tag');
 require('./tags/login.tag');
@@ -23,12 +21,15 @@ workspace.on('loginRequired', function () {
     riot.route('auth/login?backref=' + window.location.hash);
 });
 
-var loginRequired = function (f) {
+var loginRequired = function () {
+    var d = $.Deferred();
     if (authStore.authenticated()) {
-        return f;
+        d.resolve();
     } else {
         bus.trigger('loginRequired');
+        d.reject();
     }
+    return d;
 };
 
 
@@ -54,18 +55,18 @@ var switchApp = function () {
 
 var router = function (app, view) {
 
+    var params;
     switch (app) {
         case 'project': {
-            var params;
             if (view === 'project-list') {
                 params = arguments[2];
-                loginRequired(function () {
-                    switchApp('project-list-app', [projectListStore, projectStore]).mixin(LoginRequired);
+                loginRequired().done(function () {
+                    switchApp('project-list-app', [projectListStore, projectStore]);
                     bus.trigger('projectList.fetch', {
                         page: parseInt(params.page) || 1,
                         per_page: 18
                     });
-                })();
+                });
             } else if (view === 'project-object') {
                 params = {};
                 var id;
@@ -98,7 +99,8 @@ var router = function (app, view) {
         }
         case 'auth': {
             if (view === 'login') {
-                switchApp('login', [authStore]);
+                params = arguments[2];
+                switchApp('login', [authStore], {backref: params.backref});
             }
             break;
         }

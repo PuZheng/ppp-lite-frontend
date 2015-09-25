@@ -11,6 +11,7 @@ config.debug = true;
 config.plugins = config.plugins || [];
 config.devServer = {
     contentBase: "./",
+    historyApiFallback: true,
 };
 
 config.plugins.push(new webpack.HotModuleReplacementPlugin());
