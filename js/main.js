@@ -13,6 +13,7 @@ var authStore = require('./stores/auth.js');
 require('./tags/project-list-app.tag');
 require('./tags/project.tag');
 require('./tags/login.tag');
+require('./tags/nav-bar.tag');
 
 var workspace = {
     currentApp: null,
@@ -52,7 +53,9 @@ var switchApp = function () {
 }();
 
 var projectList = function (ctx, next) {
-    switchApp('project-list-app', [projectStore]);
+    switchApp('project-list-app', [projectStore], {
+        ctx: ctx,
+    });
     bus.trigger('projectList.fetch', {
         page: parseInt(ctx.query.page) || 1,
         per_page: 18
@@ -61,7 +64,7 @@ var projectList = function (ctx, next) {
 
 var project = function (ctx, next) {
     switchApp('project-app', [ projectTypeStore, projectStore, tagStore ], {
-        backref: decodeURIComponent(ctx.query.backref) || '',
+        ctx: ctx,
     });
     (function (cb) {
         if (ctx.params.id) {
@@ -74,6 +77,13 @@ var project = function (ctx, next) {
         tagStore.fetchAll();
     });
 
+};
+
+var navBar = function (ctx, next) {
+    riot.mount('#nav-bar', 'nav-bar', {
+        ctx: ctx
+    });
+    next();
 };
 
 var login = function (ctx) {
@@ -94,9 +104,9 @@ page(function (ctx, next) {
 });
 
 
-page('/project/list', loginRequired, projectList);
-page('/project/object', loginRequired, project);
-page('/project/object/:id', loginRequired, project);
+page('/project/list', loginRequired, navBar, projectList);
+page('/project/object', loginRequired, navBar, project);
+page('/project/object/:id', loginRequired, navBar, project);
 page('/auth/login', login);
 page('/', 'project/list');
 
