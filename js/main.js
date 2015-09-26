@@ -14,6 +14,7 @@ require('./tags/project-list-app.tag');
 require('./tags/project.tag');
 require('./tags/login.tag');
 require('./tags/nav-bar.tag');
+require('./tags/profile.tag');
 
 var workspace = {
     currentApp: null,
@@ -22,7 +23,7 @@ var workspace = {
 riot.observable(workspace);
 bus.register(workspace);
 
-workspace.on('loginRequired, logout.done', function () {
+workspace.on('loginRequired logout.done', function () {
     page('auth/login');
 });
 
@@ -44,7 +45,7 @@ var switchApp = function () {
             workspace.currentStores.forEach(function (store) {
                 bus.unregister(store);
             });
-            stores.forEach(function (store) {
+            !_.isEmpty(stores) && stores.forEach(function (store) {
                 workspace.currentStores.push(store);
                 bus.register(store);
             });
@@ -91,6 +92,12 @@ var login = function (ctx) {
     switchApp('login', [authStore]);
 };
 
+var profile = function (ctx) {
+    switchApp('profile', null, {
+        ctx: ctx
+    });
+};
+
 page(function (ctx, next) {
     var qs = ctx.querystring;
     ctx.query = {};
@@ -108,7 +115,8 @@ page(function (ctx, next) {
 page('/project/list', loginRequired, navBar, projectList);
 page('/project/object', loginRequired, navBar, project);
 page('/project/object/:id', loginRequired, navBar, project);
-page('/auth/login', login);
+page('/profile', loginRequired, navBar, profile);
+page('/auth/login', navBar, login);
 page('/', 'project/list');
 
 page();
