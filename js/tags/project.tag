@@ -12,49 +12,55 @@ var page = require('page');
 
 <project-app>
 
-  <div class="ui basic segment">
-    <loader if={ loading }></loader>
-    <div class="ui top attached green message">
-      <span if={ project }>编辑</span>
-      <span if={ !project }>创建</span>
-      <span>PPP项目</span>
-      <div class="ui red label" if={ project }>{ project.name }</div>
-    </div>
-    <div class="ui attached segment">
-      <form class="ui form" target="#" action="POST">
-        <div class="required field">
-          <label for="">名称{ project && "(敲击回车修改内容)" }</label>
-          <input type="text" name="name" placeholder="请输入名称..." autofocus value={ project && project.name } onblur={ project && doUpdate['name'] }
-          onkeypress={ project && makeMeBlurWhen('enter') }
-          >
+  <div class="ui page grid">
+    <div class="row">
+      <div class="column">
+        <div class="ui basic segment">
+          <loader if={ loading }></loader>
+          <div class="ui top attached green message">
+            <span if={ project }>编辑</span>
+            <span if={ !project }>创建</span>
+            <span>PPP项目</span>
+            <div class="ui red label" if={ project }>{ project.name }</div>
+          </div>
+          <div class="ui attached segment">
+            <form class="ui form" target="#" action="POST">
+              <div class="required field">
+                <label for="">名称{ project && "(敲击回车修改内容)" }</label>
+                <input type="text" name="name" placeholder="请输入名称..." autofocus value={ project && project.name } onblur={ project && doUpdate['name'] }
+                onkeypress={ project && makeMeBlurWhen('enter') }
+                >
+              </div>
+              <div class="required field">
+                <label for="">初步预算(单位: 元, { project && "敲击回车修改内容" })</label>
+                <input type="number" name="budget" placeholder="请输入预算..." step=1 value={ project && project.budget } onblur={ project && doUpdate['budget'] }
+                onkeypress={ project && makeMeBlurWhen('enter') }
+                >
+              </div>
+              <div class="required field">
+                <label for="">概述(256字{ project && ", 敲击ctrl+回车修改内容" })</label>
+                <textarea name="description" cols="30" rows="10" placeholder="请输入概述..." onblur={ project && doUpdate['description'] }
+                  onkeypress={ project && makeMeBlurWhen('c-enter') }
+                  >
+                  { project && project.description }
+                </textarea>
+              </div>
+              <div class="field">
+                <label for="">项目类型</label>
+                <project-type-selector id={ project && project.projectTypeId } project-id={ project && project.id }></project-type-selector>
+              </div>
+              <div class="field">
+                <label for="">标签</label>
+                <tag-editor project-id={ project && project.id } tags="{ project && JSON.stringify(project.tags) }"></tag-editor>
+              </div>
+              <hr>
+              <a href="#" class="ui button" onclick={ back }>返回</a>
+              <button class="ui green button" type="submit" if={ !project }>提交</button>
+              <button class="delete ui red button" if={ project } onclick={ deleteHandler }>删除</button>
+            </form>
+          </div>
         </div>
-        <div class="required field">
-          <label for="">初步预算(单位: 元, { project && "敲击回车修改内容" })</label>
-          <input type="number" name="budget" placeholder="请输入预算..." step=1 value={ project && project.budget } onblur={ project && doUpdate['budget'] }
-          onkeypress={ project && makeMeBlurWhen('enter') }
-          >
-        </div>
-        <div class="required field">
-          <label for="">概述(256字{ project && ", 敲击ctrl+回车修改内容" })</label>
-          <textarea name="description" cols="30" rows="10" placeholder="请输入概述..." onblur={ project && doUpdate['description'] }
-            onkeypress={ project && makeMeBlurWhen('c-enter') }
-            >
-            { project && project.description }
-          </textarea>
-        </div>
-        <div class="field">
-          <label for="">项目类型</label>
-          <project-type-selector id={ project && project.projectTypeId } project-id={ project && project.id }></project-type-selector>
-        </div>
-        <div class="field">
-          <label for="">标签</label>
-          <tag-editor project-id={ project && project.id } tags="{ project && JSON.stringify(project.tags) }"></tag-editor>
-        </div>
-        <hr>
-        <a href="#" class="ui button" onclick={ back }>返回</a>
-        <button class="ui green button" type="submit" if={ !project }>提交</button>
-        <button class="delete ui red button" if={ project } onclick={ deleteHandler }>删除</button>
-      </form>
+      </div>
     </div>
   </div>
 

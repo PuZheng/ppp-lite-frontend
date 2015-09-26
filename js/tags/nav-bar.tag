@@ -22,7 +22,7 @@ var page = require('page');
         </div>
         <i class="dropdown icon"></i>
         <div class="menu">
-          <a class="item" href="#">
+          <a class="item" href="profile">
             <i class="icon edit"></i>
             用户信息
           </a>

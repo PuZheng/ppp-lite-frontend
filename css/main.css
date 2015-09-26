@@ -277,3 +277,7 @@ textarea {
         page-break-after: avoid;
     }
 }
+
+#main {
+    margin-top: 4rem;
+}
