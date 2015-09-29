@@ -7,8 +7,8 @@ function ProjectStore() {
 
     this.on('project.fetch', function (id) {
         this.fetch(id);
-    }).on('project.update', function (id, data) {
-        this.update(id, data);
+    }).on('project.update', function (id, data, bundle) {
+        this.update(id, data, bundle);
     }).on('project.save', function (data) {
         this.save(data);
     }).on('project.delete', function (id) {
@@ -28,20 +28,20 @@ ProjectStore.prototype.fetch = function (id) {
     return d;
 };
 
-ProjectStore.prototype.update = function (id, data) {
+ProjectStore.prototype.update = function (id, patch, bundle) {
     var d = $.Deferred();
     bus.trigger('project.updating');
     $.ajax({
         url: config.backend + '/project/project-object/' + id,
         type: 'PUT',
-        data: JSON.stringify(data),
+        data: JSON.stringify(patch),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
     }).done(function (data) {
-        bus.trigger('project.updated', data);
+        bus.trigger('project.updated', data, patch, bundle);
         d.resolve(data);
     }).fail(function (data) {
-        console.log('failed to update project', id, data);
+        console.log('failed to update project', id, data, patch);
     });
     return d;
 };

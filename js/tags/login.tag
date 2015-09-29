@@ -17,7 +17,7 @@ var bus = require('riot-bus');
             <div class="ui error message">
             </div>
             <div class="required field">
-              <label for="">用户名</label>
+              <label for="">邮箱</label>
               <input type="text" name="email">
             </div>
             <div class="required field">

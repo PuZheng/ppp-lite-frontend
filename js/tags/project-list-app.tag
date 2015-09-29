@@ -31,7 +31,7 @@ var page = require('page');
             <span>-</span>
             { moment(createdAt).format('l') }
           </div>
-          <div class="tags">
+          <div>
             <div class="ui yellow icon label">
               <i class="ui tiny icon yen"></i>
               { parseInt(budget / 10000) } 万元
