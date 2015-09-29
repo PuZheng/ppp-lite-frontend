@@ -9,6 +9,7 @@ var projectTypeStore = require('./stores/project-type.js');
 var projectStore = require('./stores/project.js');
 var tagStore = require('./stores/tag.js');
 var authStore = require('./stores/auth.js');
+var assetsStore = require('./stores/assets.js');
 
 require('./tags/project-list-app.tag');
 require('./tags/project.tag');
@@ -65,7 +66,7 @@ var projectList = function (ctx, next) {
 };
 
 var project = function (ctx, next) {
-    switchApp('project-app', [ projectTypeStore, projectStore, tagStore ], {
+    switchApp('project-app', [ projectTypeStore, projectStore, tagStore, assetsStore ], {
         ctx: ctx,
     });
     (function (cb) {

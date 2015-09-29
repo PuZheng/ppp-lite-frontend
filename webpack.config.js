@@ -27,7 +27,10 @@ module.exports = {
             'sweetalert': resolvePath('node_modules/sweetalert/dist/'),
             'toastr': resolvePath('node_modules/toastr/build/'),
             'lodash': resolvePath('node_modules/lodash/index.js'),
-            'MotionCAPTCHA': resolvePath('vendors/MotionCAPTCHA/')
+            'MotionCAPTCHA': resolvePath('vendors/MotionCAPTCHA/'),
+            'perfect-scrollbar': resolvePath('node_modules/perfect-scrollbar/'),
+            'nprogress': resolvePath('node_modules/nprogress'),
+            'join-url': resolvePath('js/join-url.js'),
         },
         root: '.',
     },
