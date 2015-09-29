@@ -2,6 +2,7 @@ var riot = require('riot');
 var config = require('config');
 var joinURL = require('join-url');
 var moment = require('moment');
+var bus = require('riot-bus');
 
 var swal = require('sweetalert/sweetalert.min.js');
 require('sweetalert/sweetalert.css');
@@ -63,10 +64,30 @@ require('sweetalert/sweetalert.css');
 
   <script>
     var self = this;
+    self.mixin(bus.Mixin);
     self.on('mount', function () {
       self.asset = JSON.parse(self.opts.asset);
-      console.log(self.asset);
-    });
+    }).on('asset.delete.done', function (path) {
+      if (path === self.asset.path) {
+        bus.trigger('project.update', self.opts.projectId, {
+          assets: [{
+            op: 'delete',
+            id: self.asset.id,
+          }]
+        });
+      }
+    }).on('project.updated', function (data, patch) {
+      if (patch.assets && patch.assets[0].op === 'delete' && patch.assets[0].id === self.asset.id) {
+        swal({
+          type: 'success',
+          title: '删除成功!',
+        }, function () {
+          self.unmount();
+        });
+      }
+    }).on('asset.delete.failed', function () {
+      // TODO handle error
+    });;
     _.extend(self, {
       downloadHandler: function () {
         console.log('download');
@@ -76,14 +97,17 @@ require('sweetalert/sweetalert.css');
       joinURL: joinURL,
       config: config,
       moment: moment,
+      deleteHandler: function (e) {
+        swal({
+          type: 'warning',
+          title: '警告',
+          text: '您确认要删除该文件?',
+          showCancelButton: true,
+          closeOnConfirm: false
+        }, function (confirmed) {
+          confirmed && bus.trigger('asset.delete', self.asset.path);
+        })
+      }
     });
-    self.cardClickHandler = function () {
-
-      console.log('card');
-    };
-
-    self.deleteHandler = function () {
-
-    }
   </script>
 </asset-item>

@@ -23,7 +23,7 @@ require('sweetalert/sweetalert.css');
   </div>
   <div class="ui attached segment">
     <div class="assets ui six column grid">
-      <asset-item each={ asset in assets } asset={ JSON.stringify(asset) }></asset-item>
+      <asset-item each={ asset in assets } asset={ JSON.stringify(asset) } project-id={ parent.opts['project-id'] }></asset-item>
     </div>
   </div>
 
@@ -46,7 +46,6 @@ require('sweetalert/sweetalert.css');
     self.assets = [];
     self.mixin(bus.Mixin);
 
-
     nprogress.configure({ trickle: false });
 
     self.on('mount', function () {
@@ -55,21 +54,24 @@ require('sweetalert/sweetalert.css');
       })
       self.$input.change(function (e) {
         var file = e.currentTarget.files[0];
-        bus.trigger('upload', file, self.project.name + '/' + file.name);
+        bus.trigger('asset.upload', file, self.project.name + '/' + file.name);
         $(self.root).find('.attached.segment').perfectScrollbar();
       });
-    }).on('before.upload', function () {
+    }).on('before.asset.upload', function () {
       nprogress.start();
       self.loading = true;
       self.update;
-    }).on('upload.ended', function () {
+    }).on('before.asset.delete', function () {
+      self.loading = true;
+      self.update;
+    }).on('asset.upload.ended', function () {
       nprogress.done();
       self.$input.val('');
-    }).on('upload.progress', function (percent) {
+    }).on('asset.upload.progress', function (percent) {
       nprogress.set(percent)
-    }).on('upload.failed', function () {
+    }).on('asset.upload.failed', function () {
       // TODO handle error
-    }).on('upload.done', function (assets) {
+    }).on('asset.upload.done', function (assets) {
       bus.trigger('project.update', self.opts['project-id'], {
         assets: assets.map(function (asset) {
           return {
@@ -81,16 +83,18 @@ require('sweetalert/sweetalert.css');
     }).on('project.updated', function (data, patch, bundle) {
       self.loading = false;
       self.update();
-      swal({
-        type: 'success',
-        title: '上传成功!',
-      });
-      var $container = $(self.root).find('.assets');
-      bundle.forEach(function (asset) {
-        asset.filename = _.trimLeft(asset.filename, self.project.name + '/');
-      });
-      self.assets = self.assets.concat(bundle);
-      self.update();
+      if (patch.assets && patch.assets[0].op === 'add') {
+        swal({
+          type: 'success',
+          title: '上传成功!',
+        });
+        var $container = $(self.root).find('.assets');
+        bundle.forEach(function (asset) {
+          asset.filename = _.trimLeft(asset.filename, self.project.name + '/');
+        });
+        self.assets = self.assets.concat(bundle);
+        self.update();
+      }
     }).on('project.fetching', function () {
       self.loading = false;
       self.update();
