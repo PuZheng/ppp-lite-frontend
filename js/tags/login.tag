@@ -85,6 +85,9 @@ var bus = require('riot-bus');
     }).on('login.failed', function (reason) {
       self.loading = false;
       self.update();
+      if (typeof reason === 'string') {
+        reason = [reason];
+      }
       $(self.root).find('form').form('add errors', reason);
     }).on('login.success', function (user) {
       history.back();

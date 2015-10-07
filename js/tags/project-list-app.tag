@@ -10,45 +10,66 @@ require('sweetalert/sweetalert.css');
 var page = require('page');
 
 <project-list-app>
-  <a class="new ui green icon button" href='/project/object'>
-    <i class="icon plus"></i>
-    新建
-  </a>
-  <loader if={ loading }></loader>
-  <div class="ui six column grid">
-    <div class="ui column" each={ projects }>
-      <a class="ui card" data-id={ id } onclick={ cardClickHandler } >
-        <div class="ui bottom right corner label">
-          <i class="delete icon" onclick={ deleteHandler } data-project-id={ id }></i>
-        </div>
-        <div class="content">
-          <i class="right floated big blue icon { \{ '文教卫': 'university', '交通': 'road', '政法': 'legal', '水利': 'fork', '市政基础设施建设': 'building' \}[projectType.name] }"></i>
-          <div class="header">
-            { name }
+  <div class="ui top attached tabular menu">
+    <a class="new ui green icon button" href='/project/object'>
+      <i class="icon plus"></i>
+      新建
+    </a>
+    <a class="{ (opts.ctx.query.published === undefined || opts.ctx.query.published == 1)? 'active': ''} item" href="/project/list?published=1">
+      进行中
+    </a>
+    <a class="{ opts.ctx.query.published == 0? 'active': ''} item" href="/project/list?published=0" if={ opts.ctx.user.role.name != 'PPP中心' }>
+      未发布
+    </a>
+  </div>
+  <div class="ui bottom attached segment">
+    <loader if={ loading }></loader>
+    <div class="ui six column grid">
+      <div class="ui column" each={ projects }>
+        <a class="ui card" data-id={ id } onclick={ cardClickHandler } >
+          <div class="ui bottom right corner label">
+            <i class="delete icon" onclick={ deleteHandler } data-project-id={ id }></i>
           </div>
-          <div class="meta">
-            { projectType.name }
-            <span>-</span>
-            { moment(createdAt).format('l') }
-          </div>
-          <div>
-            <div class="ui yellow icon label">
-              <i class="ui tiny icon yen"></i>
-              { parseInt(budget / 10000) } 万元
+          <div class="content">
+            <i class="right floated big blue icon { \{ '文教卫': 'university', '交通': 'road', '政法': 'legal', '水利': 'fork', '市政基础设施建设': 'building' \}[projectType.name] }"></i>
+            <div class="header">
+              { name }
+            </div>
+            <div class="meta">
+              { projectType.name }
+              <span>-</span>
+              { moment(createdAt).format('l') }
+            </div>
+            <div>
+              <div class="ui yellow icon label">
+                <i class="ui tiny icon yen"></i>
+                { parseInt(budget / 10000) } 万元
+              </div>
+            </div>
+            <div class="description">
+              { description.length > 64? description.substr(0, 64) + '...': description }
+            </div>
+            <div class="ui label" if={ workflow }>
+              <div class="ui tiny header">
+                等待
+                <raw each={ workflow.nextTasks }>
+                  { name }
+                </raw>
+              </div>
             </div>
           </div>
-          <div class="description">
-            { description.length > 64? description.substr(0, 64) + '...': description }
+          <div class="extra content">
+            <span class="ui red label" each={ tags }>{ value }</span>
           </div>
-        </div>
-        <div class="extra content">
-          <span class="ui red label" each={ tags }>{ value }</span>
-        </div>
-      </a>
+        </a>
+      </div>
     </div>
+    <paginator if={ pagination } pagination={ pagination }></paginator>
   </div>
-  <paginator if={ pagination } pagination={ pagination }></paginator>
   <style scoped>
+    .bottom.attached.segment {
+      min-height: 36rem;
+    }
     .card {
       min-height: 16rem;
       width: 100%;

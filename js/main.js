@@ -17,10 +17,15 @@ require('./tags/login.tag');
 require('./tags/nav-bar.tag');
 require('./tags/profile.tag');
 
+$.ajaxSetup({
+    cache: false,
+});
+
 var workspace = {
     currentApp: null,
     currentStores: [],
 };
+
 riot.observable(workspace);
 bus.register(workspace);
 
@@ -41,7 +46,7 @@ var loginRequired = function (ctx, next) {
 
 var switchApp = function () {
     return function (tagName, stores, opts) {
-        if (!workspace.currentApp || workspace.currentApp.opts['riot-tag'] != tagName) {
+        if (!workspace.currentApp || !_.isEqual(workspace.currentApp[opts], opts)) {
             workspace.currentApp = riot.mount('#main', tagName, opts || {})[0];
             workspace.currentStores.forEach(function (store) {
                 bus.unregister(store);
@@ -61,7 +66,8 @@ var projectList = function (ctx, next) {
     });
     bus.trigger('projectList.fetch', {
         page: parseInt(ctx.query.page) || 1,
-        per_page: 18
+        per_page: 18,
+        published: ctx.query.published || 1,
     });
 };
 
@@ -79,7 +85,6 @@ var project = function (ctx, next) {
         projectTypeStore.fetchAll();
         tagStore.fetchAll();
     });
-
 };
 
 var navBar = function (ctx, next) {
