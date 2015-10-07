@@ -39,7 +39,7 @@ var loginRequired = function (ctx, next) {
         bus.register(authStore);
         next();
     } else {
-        bus.trigger('loginRequired');
+        bus.trigger('loginRequired', ctx);
     }
 };
 
