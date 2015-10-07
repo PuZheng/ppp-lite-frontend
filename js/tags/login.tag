@@ -2,6 +2,7 @@ var riot = require('riot');
 require('MotionCAPTCHA/jquery.motionCaptcha.0.2.css');
 require('MotionCAPTCHA/jquery.motionCaptcha.0.2.js');
 var bus = require('riot-bus');
+var page = require('page');
 
 <login>
 
@@ -69,7 +70,8 @@ var bus = require('riot-bus');
         trigger: 'blur',
         onSuccess: function () {
           bus.trigger('login', self.email.value, self.password.value);
-        }
+        },
+        keyboardShortcuts: false
       }).on('submit', function () {
         return false;
       });
@@ -85,12 +87,10 @@ var bus = require('riot-bus');
     }).on('login.failed', function (reason) {
       self.loading = false;
       self.update();
-      if (typeof reason === 'string') {
-        reason = [reason];
-      }
+      reason === 'string' && (reason = [reason]);
       $(self.root).find('form').form('add errors', reason);
     }).on('login.success', function (user) {
-      history.back();
+      page('/');
     });
   </script>
 </login>
