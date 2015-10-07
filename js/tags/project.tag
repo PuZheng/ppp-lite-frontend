@@ -2,12 +2,14 @@ var riot = require('riot');
 var bus = require('riot-bus');
 var config = require('config');
 var swal = require('sweetalert/sweetalert.min.js');
+require('sweetalert/sweetalert.css');
 var toastr = require('toastr/toastr.min.js');
 require('toastr/toastr.min.css');
-require('sweetalert/sweetalert.css');
 require('./project-type-selector.tag');
 require('./tag-editor.tag');
 require('./assets-repo.tag');
+require('./control-panel.tag');
+require('./project-status.tag');
 var page = require('page');
 
 
@@ -29,6 +31,7 @@ var page = require('page');
           <div class="ui bottom attached tab active segment" data-tab="basic">
             <div class="ui basic segment">
               <loader if={ loading }></loader>
+              <project-status if={ project.workflow } workflow={ project.workflow }></project-status>
               <form class="ui form" target="#" action="POST">
                 <div class="required field">
                   <label for="">名称{ project && "(敲击回车修改内容)" }</label>
@@ -56,18 +59,17 @@ var page = require('page');
                 </div>
                 <div class="field">
                   <label for="">标签</label>
-                  <tag-editor project-id={ project && project.id } tags="{ project && JSON.stringify(project.tags) }"></tag-editor>
+                  <tag-editor project-id={ project && project.id } tags="{ project && project.tags }"></tag-editor>
                 </div>
                 <hr>
                 <a href="#" class="ui button" onclick={ back }>返回</a>
                 <button class="ui green button" type="submit" if={ !project }>提交</button>
-                <button class="delete ui red button" if={ project } onclick={ deleteHandler }>删除</button>
               </form>
+              <control-panel if={ project } project={ project } user={ opts.ctx.user }></control-panel>
             </div>
           </div>
           <div class="ui bottom attached tab segment" data-tab="assets" show={ project }>
-            <assets-repo project-id={ project.id }>
-            </assets-repo>
+            <assets-repo project-id={ project.id }></assets-repo>
           </div>
         </div>
       </div>
@@ -142,7 +144,7 @@ var page = require('page');
       keyboardShortcuts: false,
     };
 
-    self.on('project.fetching project.saving project.updating', function () {
+    self.on('project.fetching project.saving project.updating project.publishing project.task.passing project.task.denying', function () {
       self.loading = true;
       self.update();
     }).on('project.fetched', function (project) {
@@ -201,7 +203,26 @@ var page = require('page');
       }, function () {
         history.back();
       });
+    }).on('project.published', function (workflow) {
+      self.loading = false;
+      swal({
+        type: 'success',
+        title: '该项目已经发布!'
+      }, function () {
+        self.project.workflow = workflow;
+        self.update();
+      });
+    }).on('project.task.passed project.task.denied', function (which, workflow) {
+      self.loading = false;
+      swal({
+        type: 'success',
+        title: '操作成功!'
+      }, function () {
+        self.project.workflow = workflow;
+        self.update();
+      })
     });
+
     self.doUpdate = {};
     ['name', 'budget', 'description'].forEach(function (field) {
       self.doUpdate[field] = function (field) {
@@ -209,6 +230,7 @@ var page = require('page');
           var d = {};
           d[field] = self[field].value;
           self.updateModel(d);
+          return false;
         };
       }(field);
     });
@@ -247,18 +269,6 @@ var page = require('page');
         return true;
       }
     };
-    self.deleteHandler = function (e) {
-      e.stopPropagation();
-
-      swal({
-        type: 'warning',
-        title: '您确认要删除该项目?',
-        showCancelButton: true,
-        closeOnConfirm: false,
-      }, function (confirmed) {
-        confirmed && bus.trigger('project.delete', self.project.id);
-      });
-    }
 
   </script>
 </project-app>

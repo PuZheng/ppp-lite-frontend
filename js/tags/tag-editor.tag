@@ -23,7 +23,7 @@ var bus = require('riot-bus');
 
     self.on('update', function () {
       if (opts.tags) {
-        self.tagList = JSON.parse(opts.tags) || [];
+        self.tagList = opts.tags || [];
         self.update();
       }
     }).on('tagList.fetching, tag.saving', function () {
