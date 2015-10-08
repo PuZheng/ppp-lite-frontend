@@ -1,13 +1,13 @@
 var riot = require('riot');
 var bus = require('riot-bus');
 require('./loader.tag');
-require('./paginator.tag');
-var Pagination = require('pagination');
 var url = require('wurl');
 var moment = require('moment');
 var swal = require('sweetalert/sweetalert.min.js');
 require('sweetalert/sweetalert.css');
 var page = require('page');
+require('perfect-scrollbar/jquery')($);
+require('perfect-scrollbar/dist/css/perfect-scrollbar.min.css');
 
 <project-list-app>
   <div class="ui top attached tabular menu">
@@ -15,10 +15,10 @@ var page = require('page');
       <i class="icon plus"></i>
       新建
     </a>
-    <a class="{ (opts.ctx.query.published === undefined || opts.ctx.query.published == 1)? 'active': ''} item" href="/project/list?published=1">
+    <a class="{ (opts.ctx.path === '/project/progressing-list')? 'active': '' } item" href="/project/progressing-list">
       进行中
     </a>
-    <a class="{ opts.ctx.query.published == 0? 'active': ''} item" href="/project/list?published=0" if={ opts.ctx.user.role.name != 'PPP中心' }>
+    <a class="{ opts.ctx.path == '/project/unpublished-list'? 'active': ''} item" href="/project/unpublished-list" if={ opts.ctx.user.role.name != 'PPP中心' }>
       未发布
     </a>
   </div>
@@ -64,11 +64,11 @@ var page = require('page');
         </a>
       </div>
     </div>
-    <paginator if={ pagination } pagination={ pagination }></paginator>
   </div>
   <style scoped>
     .bottom.attached.segment {
       min-height: 36rem;
+      max-height: 80rem;
     }
     .card {
       min-height: 16rem;
@@ -84,30 +84,14 @@ var page = require('page');
 
     self.loading = false;
     self.projects = [];
-    self.pagination = null;
-    self.on('projectList.fetching', function () {
+    self.on('mount', function () {
+      $(self.root).find('.attached.segment').perfectScrollbar();
+    }).on('projectList.fetching', function () {
       self.loading = true;
       self.update();
     }).on('projectList.fetched', function (store) {
       self.loading = false;
       self.projects = store.data;
-      self.pagination = new Pagination({
-        currentPage: store.currentPage,
-        totalCount: store.totalCount,
-        perPage: store.perPage,
-        leftEdge: 2,
-        leftCurrent: 2,
-        rightCurrent: 3,
-        rightEdge: 2,
-      }).toJSON();
-      self.pagination.urlFor = function (pageNo) {
-        var query = url('?') || {};
-        query.page = pageNo;
-        return '/project/list?' + _.pairs(query).map(function (pair) {
-          return pair.join('=');
-        }).join('&');
-
-      };
       self.moment = moment; // otherwise, tag can't access moment
       self.update();
     }).on('project.deleting', function () {

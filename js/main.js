@@ -65,9 +65,7 @@ var projectList = function (ctx, next) {
         ctx: ctx,
     });
     bus.trigger('projectList.fetch', {
-        page: parseInt(ctx.query.page) || 1,
-        per_page: 18,
-        published: ctx.query.published || 1,
+        published: ctx.path === '/project/progressing-list'? 1: 0,
     });
 };
 
@@ -118,11 +116,12 @@ page(function (ctx, next) {
 });
 
 
-page('/project/list', loginRequired, navBar, projectList);
+page('/project/progressing-list', loginRequired, navBar, projectList);
+page('/project/unpublished-list', loginRequired, navBar, projectList);
 page('/project/object', loginRequired, navBar, project);
 page('/project/object/:id', loginRequired, navBar, project);
 page('/profile', loginRequired, navBar, profile);
 page('/auth/login', navBar, login);
-page('/', 'project/list');
+page('/', 'project/progressing-list');
 
 page();
