@@ -87,7 +87,7 @@ var page = require('page');
     }).on('login.failed', function (reason) {
       self.loading = false;
       self.update();
-      reason === 'string' && (reason = [reason]);
+      typeof reason === 'string' && (reason = [reason]);
       $(self.root).find('form').form('add errors', reason);
     }).on('login.success', function (user) {
       page('/');

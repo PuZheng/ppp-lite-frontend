@@ -1,6 +1,8 @@
 var riot = require('riot');
 var config = require('config');
 var bus = require('riot-bus');
+var request = require('superagent');
+var noCache = require('superagent-no-cache');
 
 function Auth() {
     riot.observable(this);
@@ -15,21 +17,22 @@ function Auth() {
 Auth.prototype.login = function (email, password) {
     var self = this;
     bus.trigger('loggingIn');
-    $.ajax({
-        url: config.backend + '/auth/login',
-        type: 'POST',
-        data: JSON.stringify({
-            email: email,
-            password: password
-        }),
-        contentType: 'application/json; charset=UTF-8',
-        dataType: 'json',  // if the format of response should be json
-    }).done(function (data, textStatus, jqXHR) {
-        self._user = data;
-        sessionStorage.setItem('user', JSON.stringify(data));
-        bus.trigger('login.success', data);
-    }).fail(function (data) {
-        bus.trigger('login.failed', data.responseJSON.reason);
+    request.post(config.backend + '/auth/login')
+    .use(noCache)
+    .type('json')
+    .accept('json')
+    .send({
+        email: email,
+        password: password
+    })
+    .end(function (err, res) {
+        if (err) {
+            bus.trigger('login.failed', res.body.reason);
+        } else {
+            self._user = res.body;
+            sessionStorage.setItem('user', res.text);
+            bus.trigger('login.success', res.body);
+        }
     });
 };
 
