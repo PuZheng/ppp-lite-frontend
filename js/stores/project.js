@@ -2,6 +2,7 @@ var riot = require('riot');
 var bus = require('riot-bus');
 var config = require('config');
 var request = require('request');
+var auth = require('./auth.js');
 
 function ProjectStore() {
     riot.observable(this);
@@ -22,6 +23,19 @@ function ProjectStore() {
         this.passTask(project, taskName, bundle);
     }).on('project.task.deny', function (project, taskName) {
         this.denyTask(project, taskName, bundle);
+    }).on('projectList.filter', function (filters) {
+        var self = this;
+        var handlers = {
+            onlyMyself: function (v) {
+                bus.trigger('projectList.filtered', v? self.data.filter(function (project) {
+                    return project.ownerId == auth.user().id;
+                }): self.data);
+            }
+        };
+        for (var k in filters) {
+            var v = filters[k];
+            handlers[k](v);
+        }
     });
 }
 
@@ -91,7 +105,7 @@ ProjectStore.prototype.fetchAll = function (params) {
             row.createdAt = new Date(row.createdAt);
         });
         self.totalCount = res.body.totalCount;
-        bus.trigger('projectList.fetched', self);
+        bus.trigger('projectList.fetched', self.data);
     }).fail(function (err, res) {
         bus.trigger('projectList.fetch.failed');
     });

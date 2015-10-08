@@ -8,6 +8,7 @@ require('sweetalert/sweetalert.css');
 var page = require('page');
 require('perfect-scrollbar/jquery')($);
 require('perfect-scrollbar/dist/css/perfect-scrollbar.min.css');
+require('./project-list-filter.tag');
 
 <project-list-app>
   <div class="ui top attached tabular menu">
@@ -22,7 +23,10 @@ require('perfect-scrollbar/dist/css/perfect-scrollbar.min.css');
       未发布
     </a>
   </div>
-  <div class="ui bottom attached segment">
+  <div class="ui attached segment">
+      <project-list-filter></project-list-filter>
+  </div>
+  <div class="ui bottom grey attached segment">
     <loader if={ loading }></loader>
     <div class="ui six column grid">
       <div class="ui column" each={ projects }>
@@ -38,7 +42,8 @@ require('perfect-scrollbar/dist/css/perfect-scrollbar.min.css');
             <div class="meta">
               { projectType.name }
               <span>-</span>
-              { moment(createdAt).format('l') }
+              由{ owner.email }创建于
+              { moment(createdAt).format('YY/MM/DD') }
             </div>
             <div>
               <div class="ui yellow icon label">
@@ -89,9 +94,9 @@ require('perfect-scrollbar/dist/css/perfect-scrollbar.min.css');
     }).on('projectList.fetching', function () {
       self.loading = true;
       self.update();
-    }).on('projectList.fetched', function (store) {
+    }).on('projectList.fetched projectList.filtered', function (which, projects) {
       self.loading = false;
-      self.projects = store.data;
+      self.projects = projects;
       self.moment = moment; // otherwise, tag can't access moment
       self.update();
     }).on('project.deleting', function () {
@@ -104,7 +109,6 @@ require('perfect-scrollbar/dist/css/perfect-scrollbar.min.css');
       })
       self.update();
     });
-
     this.cardClickHandler = function (e) {
       page('project/object/' + $(e.currentTarget).data('id'));
     };
