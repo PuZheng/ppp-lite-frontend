@@ -51,4 +51,8 @@ Auth.prototype.currentUser = function () {
     return this._user;
 };
 
+Auth.prototype.user = function () {
+    return this._user;
+};
+
 module.exports = new Auth();
