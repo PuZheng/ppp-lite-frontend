@@ -1,6 +1,7 @@
 var riot = require('riot');
 var bus = require('riot-bus');
 var config = require('config');
+var request = require('request');
 
 function ProjectStore() {
     riot.observable(this);
@@ -27,9 +28,10 @@ function ProjectStore() {
 ProjectStore.prototype.fetch = function (id) {
     var d = $.Deferred();
     bus.trigger('project.fetching');
-    $.getJSON(config.backend + '/project/project-object/' + id).done(function (data) {
-        bus.trigger('project.fetched', data);
-        d.resolve(data);
+    request(config.backend + '/project/project-object/' + id)
+    .done(function (res) {
+        bus.trigger('project.fetched', res.body);
+        d.resolve(res.body);
     });
     return d;
 };
@@ -37,17 +39,12 @@ ProjectStore.prototype.fetch = function (id) {
 ProjectStore.prototype.update = function (id, patch, bundle) {
     var d = $.Deferred();
     bus.trigger('project.updating');
-    $.ajax({
-        url: config.backend + '/project/project-object/' + id,
-        type: 'PUT',
-        data: JSON.stringify(patch),
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-    }).done(function (data) {
+    request.put(config.backend + '/project/project-object/' + id, patch)
+    .done(function (data) {
         bus.trigger('project.updated', data, patch, bundle);
         d.resolve(data);
     }).fail(function (data) {
-        console.log('failed to update project', id, data, patch);
+        console.error('failed to update project', id, data, patch);
     });
     return d;
 };
@@ -55,15 +52,10 @@ ProjectStore.prototype.update = function (id, patch, bundle) {
 ProjectStore.prototype.save = function (data) {
     var d = $.Deferred();
     bus.trigger('project.saving');
-    $.ajax({
-        url: config.backend + '/project/project-object/',
-        type: 'POST',
-        data: JSON.stringify(data),
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-    }).done(function (data) {
-        bus.trigger('project.saved', data);
-        d.resolve(data);
+    request.post(config.backend + '/project/project-object/', data)
+    .done(function (res) {
+        bus.trigger('project.saved', res.body);
+        d.resolve(res.body);
     }).fail(function () {
         console.error('failed to save project');
         bus.trigger('project.save.failed');
@@ -74,12 +66,10 @@ ProjectStore.prototype.save = function (data) {
 ProjectStore.prototype.delete = function (id) {
     var d = $.Deferred();
     bus.trigger('project.deleting', id);
-    $.ajax({
-        url: config.backend + '/project/project-object/' + id,
-        method: 'delete',
-    }).done(function (data) {
+    request.delete(config.backend + '/project/project-object/' + id)
+    .done(function (res) {
         bus.trigger('project.deleted', id);
-        d.resolve(data);
+        d.resolve(res.body);
     }).fail(function () {
         console.log('failed to delete project ' + id);
     });
@@ -92,35 +82,29 @@ ProjectStore.prototype.fetchAll = function (params) {
     self.perPage = params.per_page;
     bus.trigger('projectList.fetching');
     params = params || {};
-    $.getJSON(config.backend + '/project/project-list.json?' + _.pairs(params).map(function (p) {
+    var url = config.backend + '/project/project-list.json?' + _.pairs(params).map(function (p) {
         return p[0] + '=' + p[1];
-    }).join('&')).done(function (data) {
-        self.data = data.data;
+    }).join('&');
+    request(url).done(function (res) {
+        self.data = res.body.data;
         self.data.forEach(function (row) {
             row.createdAt = new Date(row.createdAt);
         });
-        self.totalCount = data.totalCount;
+        self.totalCount = res.body.totalCount;
         bus.trigger('projectList.fetched', self);
+    }).fail(function (err, res) {
+        bus.trigger('projectList.fetch.failed');
     });
 };
 
 ProjectStore.prototype.publish = function (project) {
     bus.trigger('project.publishing', project);
     if (!project.workflowId) {
-        $.ajax({
-            url: config.backend + '/workflow/main-project-workflow',
-            type: 'POST',
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-        }).done(function (workflow) {
-            $.ajax({
-                url: config.backend + '/project/project-object/' + project.id,
-                type: 'PUT',
-                data: JSON.stringify({
+        request.post(config.backend + '/workflow/main-project-workflow')
+        .done(function (res) {
+            var workflow = res.body;
+            request.put(config.backend + '/project/project-object/' + project.id, {
                     workflowId: workflow.id,
-                }),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
             }).done(function () {
                 bus.trigger('project.published', workflow);
             }).fail(function () {
@@ -137,12 +121,9 @@ ProjectStore.prototype.publish = function (project) {
 
 ProjectStore.prototype.passTask = function (project, taskName, bundle) {
     bus.trigger('project.task.passing');
-    $.ajax({
-        url: config.backend + '/workflow/' + project.workflowId + '/' + taskName,
-        type: 'PUT',
-        data: JSON.stringify(bundle)
-    }).done(function (workflow) {
-        bus.trigger('project.task.passed', workflow);
+    request.put(config.backend + '/workflow/' + project.workflowId + '/' + taskName, bundle)
+    .done(function (res) {
+        bus.trigger('project.task.passed', res.body);
     }).fail(function () {
         bus.trigger('project.task.pass.failed', project);
     });
@@ -150,12 +131,9 @@ ProjectStore.prototype.passTask = function (project, taskName, bundle) {
 
 ProjectStore.prototype.denyTask = function (project, taskName, bundle) {
     bus.trigger('project.task.denying');
-    $.ajax({
-        url: config.backend + '/workflow/' + project.workflowId + '/' + taskName,
-        type: 'PUT',
-        data: JSON.stringify(bundle)
-    }).done(function (workflow) {
-        bus.trigger('project.task.denied', workflow);
+    request.delete(config.backend + '/workflow/' + project.workflowId + '/' + taskName, bundle)
+    .done(function (res) {
+        bus.trigger('project.task.denied', res.body);
     }).fail(function () {
         bus.trigger('project.task.pass.failed', project);
     });

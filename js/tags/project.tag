@@ -201,7 +201,7 @@ var page = require('page');
         type: 'success',
         title: '该项目已删除!',
       }, function () {
-        history.back();
+        page('/'); // TODO should return to a back ref
       });
     }).on('project.published', function (workflow) {
       self.loading = false;

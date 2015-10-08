@@ -2,6 +2,7 @@ var riot = require('riot');
 var config = require('../config.js');
 var bus = require('riot-bus');
 var joinURL = require('join-url');
+var auth = require('./auth.js');
 
 var Assets = function () {
     var self = this;
@@ -26,6 +27,9 @@ Assets.prototype.upload = function (file, filename) {
         processData: false,
         contentType: false,
         cache: false,
+        headers: {
+            Authorization: 'Bearer ' + auth.currentUser().token,
+        },
         xhr: function() {  // Custom XMLHttpRequest
             var myXhr = $.ajaxSettings.xhr();
             if (myXhr.upload){ // Check if upload property exists

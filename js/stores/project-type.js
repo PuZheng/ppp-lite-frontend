@@ -1,6 +1,7 @@
 var riot = require('riotjs');
 var config = require('config');
 var bus = require('riot-bus');
+var request = require('request');
 
 function ProjectTypeStore() {
     riot.observable(this);
@@ -14,12 +15,12 @@ ProjectTypeStore.prototype.fetchAll = function () {
     var d = $.Deferred();
     var self = this;
     bus.trigger('projectTypeList.fetching');
-    $.getJSON(config.backend + '/project/project-type-list.json').done(function (data) {
-        self.data = data.data;
+    request(config.backend + '/project/project-type-list.json').done(function (res) {
+        self.data = res.body.data;
         self.data.forEach(function (row) {
             row.createdAt = new Date(row.createdAt);
         });
-        self.totalCount = data.totalCount;
+        self.totalCount = res.body.totalCount;
         bus.trigger('projectTypeList.fetched', self);
         d.resolve(self);
     });
