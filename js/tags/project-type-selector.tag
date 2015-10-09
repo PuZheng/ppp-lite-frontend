@@ -3,7 +3,7 @@ var bus = require('riot-bus');
 <project-type-selector>
   <div class="basic ui segment">
     <loader if={ loading }></loader>
-    <div class="ui selection dropdown" show={ projectTypes && projectTypes.length }>
+    <div class="ui selection dropdown { opts.disabled? 'disabled': '' }" show={ projectTypes && projectTypes.length }>
       <input type="hidden" name="project_type_id" value={ opts.id }>
       <i class="dropdown icon"></i>
       <div class="default text">选择项目类型</div>

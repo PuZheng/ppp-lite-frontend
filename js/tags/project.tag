@@ -13,6 +13,7 @@ require('./project-status.tag');
 var page = require('page');
 var makeBlurWhenPress = require('make-blur-when-press');
 var moment = require('moment');
+var principal = require('principal');
 
 
 <project-app>
@@ -20,8 +21,9 @@ var moment = require('moment');
   <div class="ui grid">
     <div class="row">
       <div class="column">
-        <div class="ui basic segment">
-          <div class="ui top attached tabular menu">
+        <div class="ui basic main segment">
+          <loader if={ loading }></loader>
+          <div class="ui top attached tabular menu" if={ !loading }>
             <div class="item">
               <div class="ui large blue header">
                 { project? project.name: '创建项目' }
@@ -30,9 +32,8 @@ var moment = require('moment');
             <a class="active item" data-tab="basic">基本信息</a>
             <a class="item" data-tab="assets" show={ project }>资源仓库</a>
           </div>
-          <div class="ui bottom attached tab active segment" data-tab="basic">
+          <div class="ui bottom attached tab active segment" data-tab="basic" if={ !loading }>
             <div class="ui basic segment">
-              <loader if={ loading }></loader>
               <project-status if={ project.workflow } workflow={ project.workflow }></project-status>
               <div class="ui meta teal message">
                 <ul class="list">
@@ -49,6 +50,7 @@ var moment = require('moment');
                   </label>
                   <input type="text" name="name" placeholder="请输入名称..." autofocus value={ project && project.name } onblur={ project && doUpdate['name'] }
                   onkeypress={ project && makeBlurWhenPress('enter') }
+                  disabled={ uneditable }
                   >
                 </div>
                 <div class="required inline field">
@@ -57,6 +59,7 @@ var moment = require('moment');
                   </label>
                   <input type="number" name="budget" placeholder="请输入预算..." step=1 value={ project && project.budget } onblur={ project && doUpdate['budget'] }
                   onkeypress={ project && makeBlurWhenPress('enter') }
+                  disabled={ uneditable }
                   >
                 </div>
                 <div class="required inline field">
@@ -65,23 +68,24 @@ var moment = require('moment');
                   </label>
                   <textarea name="description" cols="30" rows="10" placeholder="请输入概述..." onblur={ project && doUpdate['description'] }
                     onkeypress={ project && makeBlurWhenPress('c-enter') }
+                    disabled={ uneditable }
                     >
                     { project && project.description }
                   </textarea>
                 </div>
                 <div class="inline field">
                   <label for="">项目类型</label>
-                  <project-type-selector id={ project && project.projectTypeId } project-id={ project && project.id }></project-type-selector>
+                  <project-type-selector id={ project && project.projectTypeId } project-id={ project && project.id } disabled={ uneditable }></project-type-selector>
                 </div>
                 <div class="inline field">
                   <label for="">标签</label>
-                  <tag-editor project-id={ project && project.id } tags="{ project && project.tags }"></tag-editor>
+                  <tag-editor project-id={ project && project.id } tags="{ project && project.tags }" disabled={ uneditable }></tag-editor>
                 </div>
                 <hr>
                 <a href="#" class="ui button" onclick={ back }>返回</a>
                 <button class="ui green button" type="submit" if={ !project }>提交</button>
               </form>
-              <control-panel if={ project } project={ project } user={ opts.ctx.user }></control-panel>
+              <control-panel if={ project } project={ project } user={ opts.ctx.user } disabled={ uneditable }></control-panel>
             </div>
           </div>
           <div class="ui bottom attached tab segment" data-tab="assets" show={ project }>
@@ -93,6 +97,10 @@ var moment = require('moment');
   </div>
 
   <style scoped>
+
+    .basic.main.segment {
+      min-height: 32rem;
+    }
     .tab[data-tab="assets"] {
       padding: 0;
     }
@@ -178,9 +186,26 @@ var moment = require('moment');
       self.loading = true;
       self.update();
     }).on('project.fetched', function (project) {
-      self.loading = false;
-      self.project = project;
-      self.update();
+
+      principal.permit('project.view', project).done(function () {
+        self.project = project;
+        self.loading = false;
+        self.update();
+
+        principal.permit('project.edit', project).done(function () {
+        }).fail(function (need) {
+          self.uneditable = true;
+          self.update();
+        });
+      }).fail(function (need) {
+        swal({
+          type: 'error',
+          title: '非法操作',
+          text: '您无权查看本项目',
+        }, function () {
+          page('/');
+        });
+      });
     }).on('project.saved', function (project) {
       self.loading = false;
       self.project = project;

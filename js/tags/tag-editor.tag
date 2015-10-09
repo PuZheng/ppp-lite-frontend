@@ -4,7 +4,7 @@ var bus = require('riot-bus');
 <tag-editor>
   <div class="basic ui segment">
     <loader if={ loading }></loader>
-    <div class="ui fluid multiple search selection dropdown">
+    <div class="ui fluid multiple search selection dropdown { opts.disabled? 'disabled': '' }">
       <input type="hidden" name="tags" value={ tags? _.pluck(tagList, 'id').join(','): '' }>
       <i class="dropdown icon"></i>
       <div class="default text">选择标签</div>
