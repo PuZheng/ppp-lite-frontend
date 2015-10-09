@@ -35,6 +35,7 @@ module.exports = {
             'superagent-no-cache': resolvePath('node_modules/superagent-no-cache'),
             'request': resolvePath('js/request.js'),
             'make-blur-when-press': resolvePath('js/make-blur-when-press.js'),
+            'principal': resolvePath('js/principal'),
         },
         root: '.',
     },

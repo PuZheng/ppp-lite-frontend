@@ -11,6 +11,7 @@ var tagStore = require('./stores/tag.js');
 var authStore = require('./stores/auth.js');
 var assetsStore = require('./stores/assets.js');
 var userStore = require('./stores/user.js');
+var principal = require('principal');
 
 require('./tags/project-list-app.tag');
 require('./tags/project.tag');
@@ -34,10 +35,33 @@ workspace.on('loginRequired logout.done', function () {
     page('auth/login');
 });
 
+principal.onIdentityChanged(function (provides, ctx) {
+    if (ctx.user.role.name === '业主') {
+        provides.append('project.view', function (project) {
+            var ret = $.Deferred();
+            if (project.department.id != ctx.user.department.id) {
+                ret.reject('project.view');
+            } else {
+                ret.resolve();
+            }
+            return ret;
+        }).append('project.edit', function (project) {
+            var ret = $.Deferred();
+            if (project.ownerId != ctx.user.id) {
+                ret.reject('project.edit');
+            } else {
+                ret.resolve();
+            }
+            return ret;
+        });
+    }
+});
+
 var loginRequired = function (ctx, next) {
     if (authStore.authenticated()) {
         ctx.user = authStore.currentUser();
         bus.register(authStore);
+        principal.resetIdentity(ctx);
         next();
     } else {
         bus.trigger('loginRequired', ctx);
