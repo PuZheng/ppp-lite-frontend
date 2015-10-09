@@ -37,7 +37,7 @@ workspace.on('loginRequired logout.done', function () {
 
 principal.onIdentityChanged(function (provides, ctx) {
     if (ctx.user.role.name === '业主') {
-        provides.append('project.view', function (project) {
+        var sameDepartment = function (project) {
             var ret = $.Deferred();
             if (project.department.id != ctx.user.department.id) {
                 ret.reject('project.view');
@@ -45,7 +45,8 @@ principal.onIdentityChanged(function (provides, ctx) {
                 ret.resolve();
             }
             return ret;
-        }).append('project.edit', function (project) {
+        };
+        var sameUser = function (project) {
             var ret = $.Deferred();
             if (project.ownerId != ctx.user.id) {
                 ret.reject('project.edit');
@@ -53,7 +54,9 @@ principal.onIdentityChanged(function (provides, ctx) {
                 ret.resolve();
             }
             return ret;
-        });
+        };
+        provides.append('project.view', sameDepartment)
+        .append('project.edit', sameUser).append('project.delete', sameUser);
     }
 });
 

@@ -2,9 +2,11 @@ var riot = require('riot');
 var bus = require('riot-bus');
 var swal = require('sweetalert/sweetalert.min.js');
 require('sweetalert/sweetalert.css');
+var principal = require('principal');
+
 <control-panel>
   <div class="ui buttons">
-    <button class="delete ui red button" onclick={ deleteHandler }>删除</button>
+    <button class="delete ui red button" onclick={ deleteHandler } if={ can.delete }>删除</button>
     <button class="delete ui blue button" if={ !project.workflow && role === '业主' } onclick={ publishHandler }>发布</button>
     <raw each={ project.workflow.nextTasks }>
       <button class="delete ui blue button" if={ name === 'START' && role === '业主' } onclick={ publishHandler }>发布</button>
@@ -73,11 +75,17 @@ require('sweetalert/sweetalert.css');
   </div>
   <script>
     var self = this;
+    self.can = {};
     self.consultants = [
       { email: 'zx1@gmail.com' },
       { email: 'zx2@gmail.com' }
     ]
-    self.on('update', function () {
+    self.on('mount', function () {
+      principal.permit('project.delete', self.opts.project).done(function () {
+        self.can['delete'] = true;
+        self.update();
+      });
+    }).on('update', function () {
       if (self.opts.project) {
         self.project = self.opts.project;
         console.log(self.project);
