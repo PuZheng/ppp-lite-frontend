@@ -50,7 +50,7 @@ var page = require('page');
         transition: 'drop'
       });
     }).on('user.updated', function (user) {
-      _.assign(self.opts.user, user);
+      _.assign(self.opts.ctx.user, user);
       self.update();
     });
 
