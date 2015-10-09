@@ -3,6 +3,8 @@ require('MotionCAPTCHA/jquery.motionCaptcha.0.2.css');
 require('MotionCAPTCHA/jquery.motionCaptcha.0.2.js');
 var bus = require('riot-bus');
 var page = require('page');
+var swal = require('sweetalert/sweetalert.min.js');
+require('sweetalert/sweetalert.css');
 
 <login>
 
@@ -87,10 +89,28 @@ var page = require('page');
     }).on('login.failed', function (reason) {
       self.loading = false;
       self.update();
+      if (!reason) {
+        swal({
+          type: 'error',
+          title: '无法连接后台',
+        });
+        return;
+      }
       typeof reason === 'string' && (reason = [reason]);
       $(self.root).find('form').form('add errors', reason);
     }).on('login.success', function (user) {
-      page('/');
+      if (!user.name) {
+        swal({
+          type: 'info',
+          title: '您还没有用户名!',
+          text: '是否设置用户名?',
+          showCancelButton: true,
+        }, function (confirmed) {
+          page(confirmed? '/profile': '/');
+        });
+      } else {
+        page('/');
+      }
     });
   </script>
 </login>

@@ -42,7 +42,7 @@ require('./project-list-filter.tag');
             <div class="meta">
               { projectType.name }
               <span>-</span>
-              由{ owner.email }创建于
+              由<em>{ owner.name || owner.email }</em>创建于
               { moment(createdAt).format('YY/MM/DD') }
             </div>
             <div>
@@ -81,6 +81,9 @@ require('./project-list-filter.tag');
     }
     .card .ui.label {
       margin-left: 0;
+    }
+    .card .meta em {
+      font-weight: bold;
     }
   </style>
   <script>

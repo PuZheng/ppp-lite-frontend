@@ -10,6 +10,7 @@ var projectStore = require('./stores/project.js');
 var tagStore = require('./stores/tag.js');
 var authStore = require('./stores/auth.js');
 var assetsStore = require('./stores/assets.js');
+var userStore = require('./stores/user.js');
 
 require('./tags/project-list-app.tag');
 require('./tags/project.tag');
@@ -97,7 +98,7 @@ var login = function (ctx) {
 };
 
 var profile = function (ctx) {
-    switchApp('profile', null, {
+    switchApp('profile', [userStore], {
         ctx: ctx
     });
 };
