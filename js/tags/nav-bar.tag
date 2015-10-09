@@ -17,7 +17,7 @@ var page = require('page');
         <div class="fitted item">
           <i class="icon user"></i>
           <span class="ui teal tiny header">
-            { opts.ctx.user.email }
+            { opts.ctx.user.name || opts.ctx.user.email }
           </span>
         </div>
         <i class="dropdown icon"></i>
@@ -43,11 +43,15 @@ var page = require('page');
 
   <script>
     var self = this;
+    self.mixin(bus.Mixin);
 
     self.on('mount', function () {
       $(self.root).find('.ui.dropdown').dropdown({
         transition: 'drop'
       });
+    }).on('user.updated', function (user) {
+      _.assign(self.opts.user, user);
+      self.update();
     });
 
     self.logout = function () {

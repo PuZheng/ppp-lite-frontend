@@ -11,6 +11,7 @@ require('./assets-repo.tag');
 require('./control-panel.tag');
 require('./project-status.tag');
 var page = require('page');
+var makeBlurWhenPress = require('make-blur-when-press');
 
 
 <project-app>
@@ -36,19 +37,19 @@ var page = require('page');
                 <div class="required field">
                   <label for="">名称{ project && "(敲击回车修改内容)" }</label>
                   <input type="text" name="name" placeholder="请输入名称..." autofocus value={ project && project.name } onblur={ project && doUpdate['name'] }
-                  onkeypress={ project && makeMeBlurWhen('enter') }
+                  onkeypress={ project && makeBlurWhenPress('enter') }
                   >
                 </div>
                 <div class="required field">
                   <label for="">初步预算(单位: 元, { project && "敲击回车修改内容" })</label>
                   <input type="number" name="budget" placeholder="请输入预算..." step=1 value={ project && project.budget } onblur={ project && doUpdate['budget'] }
-                  onkeypress={ project && makeMeBlurWhen('enter') }
+                  onkeypress={ project && makeBlurWhenPress('enter') }
                   >
                 </div>
                 <div class="required field">
                   <label for="">概述(256字{ project && ", 敲击ctrl+回车修改内容" })</label>
                   <textarea name="description" cols="30" rows="10" placeholder="请输入概述..." onblur={ project && doUpdate['description'] }
-                    onkeypress={ project && makeMeBlurWhen('c-enter') }
+                    onkeypress={ project && makeBlurWhenPress('c-enter') }
                     >
                     { project && project.description }
                   </textarea>
@@ -252,23 +253,7 @@ var page = require('page');
         project_type_id: self.project.projectTypeId,
       };
     }
-    self.makeMeBlurWhen = function (test) {
-      var test = {
-        'enter': function (e) {
-          return e.which === 13;
-        },
-        'c-enter': function (e) {
-          return (e.which === 13 || e.which === 10) && e.ctrlKey;
-        }
-      }[test];
-      return function (e) {
-        if (test(e)) {
-          $(e.target).blur();
-          return false;
-        }
-        return true;
-      }
-    };
+    self.makeBlurWhenPress = makeBlurWhenPress;
 
   </script>
 </project-app>

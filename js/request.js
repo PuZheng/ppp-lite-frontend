@@ -1,6 +1,6 @@
 var agent = require('superagent');
-var auth = require('./stores/auth.js');
 var noCache = require('superagent-no-cache');
+var auth = require('./stores/auth.js');
 
 function request() {
     var args = Array.prototype.slice.call(arguments);

@@ -1,10 +1,10 @@
 var riot = require('riot');
 var config = require('config');
 var bus = require('riot-bus');
-var request = require('superagent');
+var agent = require('superagent');
 var noCache = require('superagent-no-cache');
 
-function Auth() {
+var Auth = function () {
     riot.observable(this);
     this.on('login', function (email, password) {
         this.login(email, password);
@@ -12,12 +12,16 @@ function Auth() {
     this.on('logout', function () {
         this.logout();
     });
-}
+    this.on('user.updated', function (user) {
+        this._user.name = user.name;
+        sessionStorage.setItem('user', JSON.stringify(this._user));
+    });
+};
 
 Auth.prototype.login = function (email, password) {
     var self = this;
     bus.trigger('loggingIn');
-    request.post(config.backend + '/auth/login')
+    agent.post(config.backend + '/auth/login')
     .use(noCache)
     .type('json')
     .accept('json')
@@ -27,7 +31,7 @@ Auth.prototype.login = function (email, password) {
     })
     .end(function (err, res) {
         if (err) {
-            bus.trigger('login.failed', res.body.reason);
+            bus.trigger('login.failed', res && res.body.reason);
         } else {
             self._user = res.body;
             sessionStorage.setItem('user', res.text);
