@@ -56,7 +56,7 @@ principal.onIdentityChanged(function (provides, ctx) {
             return ret;
         };
         provides.append('project.view', sameDepartment)
-        .append('project.edit', sameUser).append('project.delete', sameUser);
+        .append('project.edit', sameUser).append('project.delete', sameUser).append('project.publish', sameUser);
     }
 });
 
