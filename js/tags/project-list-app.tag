@@ -73,7 +73,6 @@ require('./project-list-filter.tag');
   <style scoped>
     .bottom.attached.segment {
       min-height: 36rem;
-      max-height: 80rem;
     }
     .card {
       min-height: 16rem;
@@ -93,7 +92,9 @@ require('./project-list-filter.tag');
     self.loading = false;
     self.projects = [];
     self.on('mount', function () {
-      $(self.root).find('.attached.segment').perfectScrollbar();
+      (function ($scrollable) {
+        $scrollable.css('max-height', window.innerHeight - $scrollable.offset().top).perfectScrollbar();
+      })($(self.root).find('.bottom.attached.segment'));
     }).on('projectList.fetching', function () {
       self.loading = true;
       self.update();
