@@ -26,10 +26,10 @@ require('sweetalert/sweetalert.css');
             <i class="tiny red icon file image outline"></i>
           </div>
           <div class="filename">
-            { asset.filename }
+            { opts.asset.filename }
           </div>
           <div class="ui blue tiny header">
-            { moment(asset.createdAt).format('l HH时') }
+            { moment(opts.asset.createdAt).format('l HH时') }
           </div>
         </div>
       </div>
@@ -65,9 +65,7 @@ require('sweetalert/sweetalert.css');
   <script>
     var self = this;
     self.mixin(bus.Mixin);
-    self.on('mount', function () {
-      self.asset = JSON.parse(self.opts.asset);
-    }).on('asset.delete.done', function (path) {
+    self.on('asset.delete.done', function (path) {
       if (path === self.asset.path) {
         bus.trigger('project.update', self.opts.projectId, {
           assets: [{

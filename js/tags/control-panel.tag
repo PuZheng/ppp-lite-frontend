@@ -6,10 +6,39 @@ var principal = require('principal');
 
 <control-panel>
   <div class="ui buttons">
-    <button class="delete ui red button" onclick={ deleteHandler } if={ can.delete }>删除</button>
-    <button class="delete ui blue button" if={ !project.workflow && can.publish } onclick={ publishHandler }>发布</button>
+    <button class="delete ui red button" onclick={ handlers.delete } if={ can.delete }>删除</button>
+    <button class="delete ui blue button" if={ !opts.project.workflow && can.publish } onclick={ handlers.publish }>发布</button>
+    <div class="ui modal basic publish" if={ !opts.project.workflow && can.publish  }>
+      <div class="header">您确认要发布该项目？</div>
+      <div class="content">
+        <form class="ui form">
+          <div class="field">
+            <textarea name="comment" cols="30" rows="10" placeholder="填写补充说明(可选)..."></textarea>
+          </div>
+          <div class="field">
+            <div class="ui fluid multiple search selection dropdown { opts.disabled? 'disabled': '' }">
+              <input type="hidden" name="attachments">
+              <i class="dropdown icon"></i>
+              <div class="default text">添加附件</div>
+              <div class="menu">
+                <div class="item" each={ opts.project.assets } data-value={ id }>{ filename.split('/')[0] }</div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="actions">
+        <div class="ui black deny button">
+          取消
+        </div>
+        <div class="ui red positive button">
+          确认发布
+        </div>
+      </div>
+    </div>
     <raw each={ project.workflow.nextTasks }>
-      <button class="delete ui blue button" if={ name === 'START' && role === '业主' } onclick={ publishHandler }>发布</button>
+      <button class="delete ui blue button" if={ name === 'START' && can.publish } onclick={ handlers.publish }>发布</button>
+
 
       <button class="delete ui red button" if={ name === '预审' && parent.role === 'PPP中心' } onclick={ denyPreAudit }>驳回预审</button>
       <button class="delete ui green button" if={ name === '预审' && parent.role === 'PPP中心' } onclick={ passPreAudit }>通过预审</button>
@@ -73,9 +102,18 @@ var principal = require('principal');
 
     </row>
   </div>
+  <style scope>
+    .ui.modal .content textarea {
+      width: 100%;
+      color: #333;
+    }
+  </style>
   <script>
     var self = this;
-    self.can = {};
+    _.extend(self, {
+      can: {},
+      _: _,
+    });
     self.consultants = [
       { email: 'zx1@gmail.com' },
       { email: 'zx2@gmail.com' }
@@ -86,39 +124,39 @@ var principal = require('principal');
           self.can[op] = true;
           self.update();
         });
-      })
-    }).on('update', function () {
-      if (self.opts.project) {
-        self.project = self.opts.project;
-        console.log(self.project);
-      }
-      if (self.opts.user) {
-        self.user = self.opts.user;
-        self.role = self.user.role.name;
-      }
-    });
-    self.deleteHandler = function (e) {
-      e.stopPropagation();
-      swal({
-        type: 'warning',
-        title: '您确认要删除该项目?',
-        showCancelButton: true,
-        closeOnConfirm: false,
-      }, function (confirmed) {
-        confirmed && bus.trigger('project.delete', self.project.id);
       });
+    }).on('update', function () {
+      $(self.root).find('.publish.modal .ui.dropdown').dropdown();
+    });
+    self.handlers = {
+      publish: function (e) {
+        self.$publishModal = self.$publishModal || $('.publish.modal').modal({
+          onApprove: function () {
+            var formEl = $(this).find('.ui.form')[0];
+            bus.trigger('project.publish', self.opts.project, {
+              comment: formEl.comment.value,
+              attachments: formEl.attachments.value.split(','),
+            });
+          },
+          closable: false,
+        });
+        self.$publishModal.modal('show');
+      },
+      delete: function (e) {
+        e.stopPropagation();
+        swal({
+          type: 'warning',
+          title: '您确认要删除该项目?',
+          showCancelButton: true,
+          closeOnConfirm: false,
+        }, function (confirmed) {
+          confirmed && bus.trigger('project.delete', self.project.id);
+        });
+      },
     };
 
     self.publishHandler = function (e) {
       e.stopPropagation();
-      swal({
-        type: 'warning',
-        title: '您确认要发布该项目?',
-        showCancelButton: true,
-        closeOnConfirm: false,
-      }, function (confirmed) {
-        confirmed && bus.trigger('project.publish', self.project);
-      });
     };
 
     self.denyPreAudit = function (e) {
@@ -192,6 +230,7 @@ var principal = require('principal');
     };
 
     self.acceptSchemeInternally = function () {
+      /*
       swal({
         type: 'warning',
         title: '您确认接受咨询方案?',
@@ -200,7 +239,7 @@ var principal = require('principal');
       }, function (confirmed) {
         confirmed && bus.trigger('project.task.pass', self.project, '实施方案内部审核');
       });
-
+      */
     };
 
     self.denyScheme = function () {
