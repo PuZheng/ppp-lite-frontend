@@ -23,7 +23,7 @@ require('sweetalert/sweetalert.css');
   </div>
   <div class="ui attached segment">
     <div class="assets ui six column grid">
-      <asset-item each={ asset in assets } asset={ JSON.stringify(asset) } project-id={ parent.opts['project-id'] }></asset-item>
+      <asset-item each={ asset in assets } asset={ asset } project-id={ parent.opts['project-id'] }></asset-item>
     </div>
   </div>
 

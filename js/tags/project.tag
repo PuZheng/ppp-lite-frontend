@@ -224,9 +224,9 @@ var principal = require('principal');
           history.back();
         }
       });
-    }).on('project.updated', function (data) {
+    }).on('project.updated', function (project, patch, bundle) {
       self.loading = false;
-      _.extend(self.project, data);
+      _.extend(self.project, project);
       self.update();
       toastr.success('更新成功！', '', {
         positionClass: 'toast-bottom-center',

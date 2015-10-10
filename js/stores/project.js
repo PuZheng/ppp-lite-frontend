@@ -55,11 +55,11 @@ ProjectStore.prototype.update = function (id, patch, bundle) {
     var d = $.Deferred();
     bus.trigger('project.updating');
     request.put(config.backend + '/project/project-object/' + id, patch)
-    .done(function (data) {
-        bus.trigger('project.updated', data, patch, bundle);
-        d.resolve(data);
-    }).fail(function (data) {
-        console.error('failed to update project', id, data, patch);
+    .done(function (res) {
+        bus.trigger('project.updated', res.body, patch, bundle);
+        d.resolve(res.body, patch, bundle);
+    }).fail(function (err, data) {
+        console.error('failed to update project');
     });
     return d;
 };
