@@ -35,30 +35,7 @@ workspace.on('loginRequired logout.done', function () {
     page('auth/login');
 });
 
-principal.onIdentityChanged(function (provides, ctx) {
-    if (ctx.user.role.name === '业主') {
-        var sameDepartment = function (project) {
-            var ret = $.Deferred();
-            if (project.department.id != ctx.user.department.id) {
-                ret.reject('project.view');
-            } else {
-                ret.resolve();
-            }
-            return ret;
-        };
-        var sameUser = function (project) {
-            var ret = $.Deferred();
-            if (project.ownerId != ctx.user.id) {
-                ret.reject('project.edit');
-            } else {
-                ret.resolve();
-            }
-            return ret;
-        };
-        provides.append('project.view', sameDepartment)
-        .append('project.edit', sameUser).append('project.delete', sameUser).append('project.publish', sameUser);
-    }
-});
+require('./setup-principal.js');
 
 var loginRequired = function (ctx, next) {
     if (authStore.authenticated()) {
