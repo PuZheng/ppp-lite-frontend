@@ -58,6 +58,8 @@ Principal.prototype.permit = function (needs) {
             }).fail(function () {
                 ret.reject(need);
             });
+        } else {
+            ret.resolve(need);
         }
     });
     return ret;
