@@ -1,17 +1,12 @@
 var riot = require('riot');
 <project-status>
-  <div class="ui teal message">
-    <div class="ui tiny header">
-      本项目正在等待<i>{ nextTasks }</i>
-    </div>
+  <div>
+    本项目正在等待<span class="ui tiny header">{ nextTasks }</span>
   </div>
   <style scoped>
-    .ui.teal.message {
-      margin-bottom: 2.5rem;
-    }
-    .tiny.header > i {
-      display: inline-block;
-      margin: 0 0.2rem;
+    span.tiny.header {
+      display: inline-block !important;
+      margin: 0 0.2rem !important;
     }
   </style>
   <script>
