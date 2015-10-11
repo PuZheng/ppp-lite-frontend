@@ -4,7 +4,7 @@ var bus = require('riot-bus');
   <div class="basic ui segment">
     <loader if={ loading }></loader>
     <div class="ui selection dropdown { opts.disabled? 'disabled': '' }" show={ projectTypes && projectTypes.length }>
-      <input type="hidden" name="project_type_id" value={ opts.id }>
+      <input type="hidden" name="project_type_id" value={ opts.project.projectTypeId }>
       <i class="dropdown icon"></i>
       <div class="default text">选择项目类型</div>
       <div class="menu">
@@ -24,9 +24,9 @@ var bus = require('riot-bus');
       self.loading = false;
       self.update();
       var opts = {};
-      self.opts['project-id'] && (opts.onChange = function (value, text,
+      self.opts.project.id && (opts.onChange = function (value, text,
                                                            $choice) {
-          bus.trigger('project.update', self.opts['project-id'], {
+          bus.trigger('project.update', self.opts.project.id, {
             'projectTypeId': value,
           })
       });

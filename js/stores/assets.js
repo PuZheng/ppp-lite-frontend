@@ -3,6 +3,8 @@ var config = require('../config.js');
 var bus = require('riot-bus');
 var joinURL = require('join-url');
 var auth = require('./auth.js');
+var request = require('request');
+
 
 var Assets = function () {
     var self = this;
@@ -58,14 +60,9 @@ Assets.prototype.upload = function (file, filename) {
 };
 
 Assets.prototype.delete = function (path) {
-    $.ajax({
-        url: joinURL(config.assetsBackend, path),
-        type: 'DELETE',
-        dataType: 'json',
-        beforeSend: function () {
-            bus.trigger('before.asset.delete');
-        }
-    }).done(function () {
+    bus.trigger('before.asset.delete');
+    request.delete(joinURL(config.assetsBackend, path))
+    .done(function (res) {
         bus.trigger('asset.delete.done', path);
     }).fail(function () {
         bus.trigger('asset.delete.failed');

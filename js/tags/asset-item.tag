@@ -8,35 +8,33 @@ var swal = require('sweetalert/sweetalert.min.js');
 require('sweetalert/sweetalert.css');
 
 <asset-item>
-  <div class="ui column">
-    <div class="ui card" onclick={ cardClickHandler } >
-      <a class="ui bottom left corner label" onclick={ downloadHandler }>
-        <i class="download yellow icon"></i>
-      </a>
-      <div class="ui bottom right corner label">
-        <i class="delete icon" onclick={ deleteHandler }></i>
-      </div>
-      <div class="content">
-        <div class="middle aligned item">
-          <!--TODO thumbnail-->
-          <i class="massive icon file outline"></i>
-        </div>
-        <div class="meta">
-          <div class="type indicator">
-            <i class="tiny red icon file image outline"></i>
-          </div>
-          <div class="filename">
-            { opts.asset.filename }
-          </div>
-          <div class="ui blue tiny header">
-            { moment(opts.asset.createdAt).format('l HH时') }
-          </div>
-        </div>
-      </div>
-      <!--TODO show tags-->
-      <!--<div class="extra content">-->
-      <!--</div>-->
+  <div class="ui card" onclick={ cardClickHandler } >
+    <a class="ui bottom left corner label" onclick={ downloadHandler }>
+      <i class="download yellow icon"></i>
+    </a>
+    <div class="ui bottom right corner label">
+      <i class="delete icon" onclick={ deleteHandler }></i>
     </div>
+    <div class="content">
+      <div class="middle aligned item">
+        <!--TODO thumbnail-->
+        <i class="huge icon file outline"></i>
+      </div>
+      <div class="meta">
+        <div class="type indicator">
+          <i class="tiny red icon file image outline"></i>
+        </div>
+        <div class="filename">
+          { opts.asset.filename.split('/')[1] }
+        </div>
+        <div class="ui blue tiny header">
+          { moment(opts.asset.createdAt).format('l HH时') }
+        </div>
+      </div>
+    </div>
+    <!--TODO show tags-->
+    <!--<div class="extra content">-->
+      <!--</div>-->
   </div>
 
   <style scoped>
@@ -65,25 +63,7 @@ require('sweetalert/sweetalert.css');
   <script>
     var self = this;
     self.mixin(bus.Mixin);
-    self.on('asset.delete.done', function (path) {
-      if (path === self.asset.path) {
-        bus.trigger('project.update', self.opts.projectId, {
-          assets: [{
-            op: 'delete',
-            id: self.asset.id,
-          }]
-        });
-      }
-    }).on('project.updated', function (data, patch) {
-      if (patch.assets && patch.assets[0].op === 'delete' && patch.assets[0].id === self.asset.id) {
-        swal({
-          type: 'success',
-          title: '删除成功!',
-        }, function () {
-          self.unmount();
-        });
-      }
-    }).on('asset.delete.failed', function () {
+    self.on('asset.delete.failed', function () {
       // TODO handle error
     });;
     _.extend(self, {
