@@ -23,7 +23,9 @@ require('sweetalert/sweetalert.css');
   </div>
   <div class="ui attached segment">
     <div class="assets ui six column grid">
-      <asset-item each={ asset in assets } asset={ asset } project-id={ parent.opts['project-id'] }></asset-item>
+      <div class="ui column" each={ asset in opts.project.assets }>
+        <asset-item  asset={ asset } project={ parent.opts.project }></asset-item>
+      </div>
     </div>
   </div>
 
@@ -34,16 +36,29 @@ require('sweetalert/sweetalert.css');
     }
 
     .attached.segment {
-      height: 48rem;
+      min-height: 48rem;
     }
     .attached.segment .assets {
       overflow: hidden;
+    }
+
+    .attached.segment .column {
+      padding: 0;
+    }
+
+    input[type=file] {
+      position: absolute;
+      top: 0;
+      right: 0;
+      min-width: 100%;
+      min-height: 100%;
+      opacity: 0;
+      display: block;
     }
   </style>
 
   <script>
     var self = this;
-    self.assets = [];
     self.mixin(bus.Mixin);
 
     nprogress.configure({ trickle: false });
@@ -54,7 +69,7 @@ require('sweetalert/sweetalert.css');
       })
       self.$input.change(function (e) {
         var file = e.currentTarget.files[0];
-        bus.trigger('asset.upload', file, self.project.name + '/' + file.name);
+        bus.trigger('asset.upload', file, self.opts.project.name + '/' + file.name);
         $(self.root).find('.attached.segment').perfectScrollbar();
       });
     }).on('before.asset.upload', function () {
@@ -72,7 +87,7 @@ require('sweetalert/sweetalert.css');
     }).on('asset.upload.failed', function () {
       // TODO handle error
     }).on('asset.upload.done', function (assets) {
-      bus.trigger('project.update', self.opts['project-id'], {
+      bus.trigger('project.update', self.opts.project.id, {
         assets: assets.map(function (asset) {
           return {
             'op': 'add',
@@ -83,29 +98,40 @@ require('sweetalert/sweetalert.css');
     }).on('project.updated', function (data, patch, bundle) {
       self.loading = false;
       self.update();
-      if (patch.assets && patch.assets[0].op === 'add') {
-        swal({
-          type: 'success',
-          title: '上传成功!',
-        });
-        var $container = $(self.root).find('.assets');
-        bundle.forEach(function (asset) {
-          asset.filename = _.trimLeft(asset.filename, self.project.name + '/');
-        });
-        self.assets = self.assets.concat(bundle);
-        self.update();
+      if (patch.assets) {
+        if (patch.assets[0].op === 'add') {
+          swal({
+            type: 'success',
+            title: '上传成功!',
+          }, function () {
+            self.opts.project.assets = self.opts.project.assets.concat(bundle);
+            self.update();
+          });
+        } else if (patch.assets[0].op === 'delete') {
+          swal({
+            type: 'success',
+            title: '删除成功!',
+          }, function () {
+            self.opts.project.assets = self.opts.project.assets.filter(function (asset) {
+              return asset.id != patch.assets[0].id;
+            });
+            self.update();
+          });
+        }
       }
-    }).on('project.fetching', function () {
-      self.loading = false;
-      self.update();
-    }).on('project.fetched', function (project) {
-      self.loading = false;
-      self.project = project;
-      self.assets = project.assets;
-      self.assets.forEach(function (asset) {
-        asset.filename = _.trimLeft(asset.filename, self.project.name + '/');
+    }).on('asset.delete.done', function (path) {
+      var asset = self.opts.project.assets.filter(function (asset) {
+        return path === asset.path;
       });
-      self.update();
+      asset = asset && asset[0];
+      if (asset) {
+        bus.trigger('project.update', self.opts.project.id, {
+          assets: [{
+            op: 'delete',
+            id: asset.id,
+          }]
+        });
+      }
     });
   </script>
 </assets-repo>

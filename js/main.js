@@ -14,7 +14,7 @@ var userStore = require('./stores/user.js');
 var principal = require('principal');
 
 require('./tags/project-list-app.tag');
-require('./tags/project.tag');
+require('./tags/project-app.tag');
 require('./tags/login.tag');
 require('./tags/nav-bar.tag');
 require('./tags/profile.tag');

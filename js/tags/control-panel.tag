@@ -150,7 +150,7 @@ var principal = require('principal');
           showCancelButton: true,
           closeOnConfirm: false,
         }, function (confirmed) {
-          confirmed && bus.trigger('project.delete', self.project.id);
+          confirmed && bus.trigger('project.delete', self.opts.project.id);
         });
       },
     };
