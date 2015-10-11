@@ -10,7 +10,7 @@ var bus = require('riot-bus');
 
 <project-primary>
   <div class="ui basic segment">
-    <div class="ui meta teal message">
+    <div class="ui meta teal message" if={ opts.project }>
       <ul class="list">
         <li><project-status if={ opts.project.workflow } workflow={ opts.project.workflow }></project-status></li>
         <li>创建人 - <em>{ opts.project.owner.name || opts.project.owner.email }</em></li>
