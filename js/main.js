@@ -11,6 +11,7 @@ var tagStore = require('./stores/tag.js');
 var authStore = require('./stores/auth.js');
 var assetsStore = require('./stores/assets.js');
 var userStore = require('./stores/user.js');
+var todoStore = require('./stores/todo.js');
 var principal = require('principal');
 
 require('./tags/project-list-app.tag');
@@ -18,6 +19,7 @@ require('./tags/project-app.tag');
 require('./tags/login.tag');
 require('./tags/nav-bar.tag');
 require('./tags/profile.tag');
+require('./tags/todo-list.tag');
 
 $.ajaxSetup({
     cache: false,
@@ -72,6 +74,7 @@ var projectList = function (ctx, next) {
     bus.trigger('projectList.fetch', {
         published: ctx.path === '/project/progressing-list'? 1: 0,
     });
+    next();
 };
 
 var project = function (ctx, next) {
@@ -88,6 +91,7 @@ var project = function (ctx, next) {
         projectTypeStore.fetchAll();
         tagStore.fetchAll();
     });
+    next();
 };
 
 var navBar = function (ctx, next) {
@@ -97,14 +101,30 @@ var navBar = function (ctx, next) {
     next();
 };
 
-var login = function (ctx) {
+var login = function (ctx, next) {
     switchApp('login', [authStore]);
+    next();
 };
 
-var profile = function (ctx) {
+
+var profile = function (ctx, next) {
     switchApp('profile', [userStore], {
         ctx: ctx
     });
+    next();
+};
+
+var todoList = function (ctx, next) {
+    switchApp('todo-list', null, {
+        ctx: ctx
+    });
+    next();
+};
+
+var setupTodoStore = function (ctx, next) {
+    bus.register(todoStore);
+    bus.trigger('todos.fetch');
+    next();
 };
 
 page(function (ctx, next) {
@@ -121,12 +141,13 @@ page(function (ctx, next) {
 });
 
 
-page('/project/progressing-list', loginRequired, navBar, projectList);
-page('/project/unpublished-list', loginRequired, navBar, projectList);
-page('/project/object', loginRequired, navBar, project);
-page('/project/object/:id', loginRequired, navBar, project);
-page('/profile', loginRequired, navBar, profile);
+page('/project/progressing-list', loginRequired, navBar, projectList, setupTodoStore);
+page('/project/unpublished-list', loginRequired, navBar, projectList, setupTodoStore);
+page('/project/object', loginRequired, navBar, project, setupTodoStore);
+page('/project/object/:id', loginRequired, navBar, project, setupTodoStore);
+page('/profile', loginRequired, navBar, profile, setupTodoStore);
 page('/auth/login', navBar, login);
+page('/todo/list', loginRequired, navBar, todoList, setupTodoStore);
 page('/', 'project/progressing-list');
 
 page();

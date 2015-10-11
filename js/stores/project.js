@@ -18,8 +18,8 @@ function ProjectStore() {
         this.delete(id);
     }).on('projectList.fetch', function (params) {
         this.fetchAll(params);
-    }).on('project.publish', function (project) {
-        this.publish(project);
+    }).on('project.publish', function (project, bundle) {
+        this.publish(project, bundle);
     }).on('project.task.pass', function (project, taskName, bundle) {
         this.passTask(project, taskName, bundle);
     }).on('project.task.deny', function (project, taskName) {
@@ -112,10 +112,10 @@ ProjectStore.prototype.fetchAll = function (params) {
     });
 };
 
-ProjectStore.prototype.publish = function (project) {
-    bus.trigger('project.publishing', project);
+ProjectStore.prototype.publish = function (project, bundle) {
+    bus.trigger('project.publishing', project, bundle);
     if (!project.workflowId) {
-        request.post(config.backend + '/workflow/main-project-workflow')
+        request.post(config.backend + '/workflow/main-project-workflow', bundle)
         .done(function (res) {
             var workflow = res.body;
             request.put(config.backend + '/project/project-object/' + project.id, {
