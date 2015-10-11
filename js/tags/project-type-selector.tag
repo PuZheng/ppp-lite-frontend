@@ -24,13 +24,12 @@ var bus = require('riot-bus');
       self.loading = false;
       self.update();
       var opts = {};
-      self.opts.project.id && (opts.onChange = function (value, text,
+      self.opts.project && (opts.onChange = function (value, text,
                                                            $choice) {
           bus.trigger('project.update', self.opts.project.id, {
             'projectTypeId': value,
           })
       });
-
       $(self.root).find('.dropdown').dropdown(opts);
     });
     this.val = function () {
