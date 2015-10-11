@@ -3,6 +3,7 @@ var bus = require('riot-bus');
 var swal = require('sweetalert/sweetalert.min.js');
 require('sweetalert/sweetalert.css');
 var principal = require('principal');
+var auth = require('../stores/auth.js');
 
 <control-panel>
   <div class="ui buttons">
@@ -21,7 +22,7 @@ var principal = require('principal');
               <i class="dropdown icon"></i>
               <div class="default text">添加附件</div>
               <div class="menu">
-                <div class="item" each={ opts.project.assets } data-value={ id }>{ filename.split('/')[0] }</div>
+                <div class="item" each={ opts.project.assets } data-value={ id }>{ filename.split('/')[1] }</div>
               </div>
             </div>
           </div>
@@ -134,6 +135,8 @@ var principal = require('principal');
           onApprove: function () {
             var formEl = $(this).find('.ui.form')[0];
             bus.trigger('project.publish', self.opts.project, {
+              projectId: self.opts.project.id,
+              requestor: auth.user().id,
               comment: formEl.comment.value,
               attachments: formEl.attachments.value.split(','),
             });
@@ -153,10 +156,6 @@ var principal = require('principal');
           confirmed && bus.trigger('project.delete', self.opts.project.id);
         });
       },
-    };
-
-    self.publishHandler = function (e) {
-      e.stopPropagation();
     };
 
     self.denyPreAudit = function (e) {
