@@ -22,7 +22,9 @@ require('toastr/toastr.min.css');
               </div>
             </div>
             <a class="active item" data-tab="basic">基本信息</a>
-            <a class="item" data-tab="assets" show={ project }>资源仓库</a>
+            <a class="item" data-tab="assets" show={ project }>资源仓库
+              <span class="ui label circular grey">{ project.assets.length }</span>
+            </a>
           </div>
           <div class="ui bottom attached tab active segment" data-tab="basic" if={ !loading }>
             <project-primary project={ project } if={ project }></project-primary>
@@ -78,6 +80,27 @@ require('toastr/toastr.min.css');
     }).on('project.updated', function (project, patch, bundle) {
       self.loading = false;
       self.update();
+      if (patch.assets) {
+        if (patch.assets[0].op === 'add') {
+          swal({
+            type: 'success',
+            title: '上传成功!',
+          }, function () {
+            self.project.assets = self.project.assets.concat(bundle);
+            self.update();
+          });
+        } else if (patch.assets[0].op === 'delete') {
+          swal({
+            type: 'success',
+            title: '删除成功!',
+          }, function () {
+            self.project.assets = self.project.assets.filter(function (asset) {
+              return asset.id != patch.assets[0].id;
+            });
+            self.update();
+          });
+        }
+      }
       toastr.success('更新成功！', '', {
         positionClass: 'toast-bottom-center',
         timeOut: 1000,

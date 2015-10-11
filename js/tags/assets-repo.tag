@@ -98,27 +98,6 @@ require('sweetalert/sweetalert.css');
     }).on('project.updated', function (data, patch, bundle) {
       self.loading = false;
       self.update();
-      if (patch.assets) {
-        if (patch.assets[0].op === 'add') {
-          swal({
-            type: 'success',
-            title: '上传成功!',
-          }, function () {
-            self.opts.project.assets = self.opts.project.assets.concat(bundle);
-            self.update();
-          });
-        } else if (patch.assets[0].op === 'delete') {
-          swal({
-            type: 'success',
-            title: '删除成功!',
-          }, function () {
-            self.opts.project.assets = self.opts.project.assets.filter(function (asset) {
-              return asset.id != patch.assets[0].id;
-            });
-            self.update();
-          });
-        }
-      }
     }).on('asset.delete.done', function (path) {
       var asset = self.opts.project.assets.filter(function (asset) {
         return path === asset.path;
