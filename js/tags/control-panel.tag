@@ -7,7 +7,7 @@ var auth = require('../stores/auth.js');
 
 <control-panel>
   <div class="ui buttons">
-    <button class="delete ui red button" onclick={ handlers.delete } if={ can.delete }>删除</button>
+    <button class="delete ui red button" onclick={ handlers.delete } if={ can.delete && !opts.project.workflow }>删除</button>
     <button class="delete ui blue button" if={ !opts.project.workflow && can.publish } onclick={ handlers.publish }>发布</button>
     <div class="ui modal basic publish" if={ !opts.project.workflow && can.publish  }>
       <div class="header">您确认要发布该项目？</div>
