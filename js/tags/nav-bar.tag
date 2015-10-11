@@ -16,7 +16,7 @@ var page = require('page');
     <a class="ui item { opts.ctx.pathname === '/project/progressing-list' && 'active' }" if={ opts.ctx.user && opts.ctx.user.role.name === 'PPP中心' } href="/project/progressing-list">
       项目管理
     </a>
-    <a class="ui item { opts.ctx.pathname === '/todo/list' }" href="/todo/list">
+    <a class="ui item { opts.ctx.pathname === '/todo/list' && 'active' }" href="/todo/list">
       待办事项
       <span class="ui circular label" if={ todoCount }>{ todoCount }</span>
     </a>
