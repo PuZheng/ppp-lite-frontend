@@ -8,7 +8,7 @@ var page = require('page');
         <input type="checkbox">
         <label for=""></label>
       </div>
-      请预审项目<em>{ opts.todo.bundle.project.name }</em>
+       { opts.todo.summary }</em>
     </div>
     <div class="ui horizontal list">
       <div class="item">备注 - { opts.todo.bundle.comment }</div>
