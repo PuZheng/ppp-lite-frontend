@@ -23,12 +23,16 @@ require('./project-list-filter.tag');
       未发布
     </a>
   </div>
-  <div class="ui attached segment">
+  <div class="ui attached segment" if={ !_.isEmpty(projects) }>
       <project-list-filter></project-list-filter>
   </div>
   <div class="ui bottom grey attached segment">
     <loader if={ loading }></loader>
-    <div class="ui six column grid">
+
+    <div class="empty ui center aligned basic segment" if={ _.isEmpty(projects) }>
+      <h1 class="ui header">列表为空</h1>
+    </div>
+    <div class="ui six column grid" if={ !_.isEmpty(projects) }>
       <div class="ui column" each={ projects }>
         <a class="ui card" data-id={ id } onclick={ cardClickHandler } >
           <div class="ui bottom right corner label">
@@ -74,6 +78,16 @@ require('./project-list-filter.tag');
     .bottom.attached.segment {
       min-height: 36rem;
     }
+    .bottom.attached.segment .empty {
+      height: 36rem;
+    }
+    .bottom.attached.segment .empty .header {
+      color: #aaa;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
     .card {
       min-height: 16rem;
       width: 100%;
@@ -89,8 +103,6 @@ require('./project-list-filter.tag');
     var self = this;
     self.mixin(bus.Mixin);
 
-    self.loading = false;
-    self.projects = [];
     self.on('mount', function () {
       (function ($scrollable) {
         $scrollable.css('max-height', window.innerHeight - $scrollable.offset().top).perfectScrollbar();
@@ -113,20 +125,24 @@ require('./project-list-filter.tag');
       })
       self.update();
     });
-    this.cardClickHandler = function (e) {
-      page('project/object/' + $(e.currentTarget).data('id'));
-    };
+    _.extend(self, {
+      loading: false,
+      projects: [],
+      _: _,
+      cardClickHandler: function (e) {
+        page('project/object/' + $(e.currentTarget).data('id'));
+      },
+      deleteHandler: function (e) {
+        e.stopPropagation();
 
-    this.deleteHandler = function (e) {
-      e.stopPropagation();
-
-      swal({
-        type: 'warning',
-        title: '您确认要删除该项目?',
-        showCancelButton: true,
-      }, function (confirmed) {
-        confirmed && bus.trigger('project.delete', $(e.target).data('project-id'));
-      });
-    };
+        swal({
+          type: 'warning',
+          title: '您确认要删除该项目?',
+          showCancelButton: true,
+        }, function (confirmed) {
+          confirmed && bus.trigger('project.delete', $(e.target).data('project-id'));
+        });
+      }
+    });
   </script>
 </project-list-app>
