@@ -27,7 +27,7 @@ require('toastr/toastr.min.css');
             </a>
           </div>
           <div class="ui bottom attached tab active segment" data-tab="basic" if={ !loading }>
-            <project-primary project={ project }></project-primary>
+            <project-primary project={ project } ctx={ opts.ctx }></project-primary>
           </div>
           <div class="ui bottom attached tab segment" data-tab="assets" show={ project }>
             <assets-repo project={ project } if={ project }></assets-repo>
@@ -128,13 +128,13 @@ require('toastr/toastr.min.css');
       }, function () {
         page('/'); // TODO should return to a back ref
       });
-    }).on('project.published', function (workflow) {
+    }).on('project.published', function (project) {
       self.loading = false;
       swal({
         type: 'success',
         title: '该项目已经发布!'
       }, function () {
-        self.project.workflow = workflow;
+        _.assign(self.project, project);
         self.update();
       });
     }).on('project.task.passed project.task.denied', function (which, workflow) {

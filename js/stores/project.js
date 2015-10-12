@@ -120,8 +120,8 @@ ProjectStore.prototype.publish = function (project, bundle) {
             var workflow = res.body;
             request.put(config.backend + '/project/project-object/' + project.id, {
                     workflowId: workflow.id,
-            }).done(function () {
-                bus.trigger('project.published', workflow);
+            }).done(function (res) {
+                bus.trigger('project.published', res.body);
             }).fail(function () {
                 bus.trigger('project.publish.failed', id);
             });
