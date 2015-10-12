@@ -2,37 +2,44 @@ var riot = require('riot');
 var page = require('page');
 
 <todo-item>
-  <div class="item">
-    <div class="ui left floated compact segment">
-      <div class="ui slider checkbox fitted">
+  <div class="content" if={ opts.todo.type === 'pre-audit' } onclick={ clickHandler }>
+    <div class="ui small header">
+      <div class="ui checkbox" data-content="标记完成" onclick={ completeHandler }>
         <input type="checkbox">
         <label for=""></label>
       </div>
+      请预审项目<em>{ opts.todo.bundle.project.name }</em>
     </div>
-    <div class="content" if={ opts.todo.type === 'pre-audit' } onclick={ clickHandler }>
-      <div class="ui header">
-        请预审项目<em>{ opts.todo.bundle.project.name }</em>
-      </div>
-      <div class="description">
-        <ul class="ui list">
-          <li>备注 - { opts.todo.bundle.comment }</li>
-          <li if={ opts.todo.bundle.attachments && opts.todo.bundle.attachments.length }>附件 - { _.pluck(opts.todo.bundle.attachments, 'filename') }</li>
-        </ul>
-      </div>
+    <div class="ui horizontal list">
+      <div class="item">备注 - { opts.todo.bundle.comment }</div>
+      <div class="item" if={ opts.todo.bundle.attachments && opts.todo.bundle.attachments.length }>附件 - { _.pluck(opts.todo.bundle.attachments, 'filename') }</div>
     </div>
   </div>
   <style scoped>
-    .content {
-      margin-left: 10rem;
+    .content .ui.checkbox {
+      display: inline-block;
+    }
+    .content .header {
+      display: inline-block;
+    }
+    .content .ui.list {
+      color: #666;
     }
   </style>
   <script>
     var self = this;
+    self.on('mount', function () {
+      $(self.root).find('.ui.checkbox').popup().checkbox();
+    });
     _.extend(self, {
       _: _,
       clickHandler: function (e) {
         page('/project/object/' + self.opts.todo.bundle.projectId);
+      },
+      completeHandler: function (e) {
+        e.stopPropagation();
       }
     });
+
   </script>
 </todo-item>

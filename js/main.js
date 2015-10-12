@@ -13,6 +13,8 @@ var assetsStore = require('./stores/assets.js');
 var userStore = require('./stores/user.js');
 var todoStore = require('./stores/todo.js');
 var principal = require('principal');
+var toastr = require('toastr/toastr.min.js');
+require('toastr/toastr.min.css');
 
 require('./tags/project-list-app.tag');
 require('./tags/project-app.tag');
@@ -123,7 +125,30 @@ var todoList = function (ctx, next) {
 
 var setupTodoStore = function (ctx, next) {
     bus.register(todoStore);
-    bus.trigger('todos.fetch');
+    todoStore.fetchList().then(function (data) {
+        sessionStorage.setItem('todos', JSON.stringify(data.data.map(function (todo) {
+            return todo.id;
+        })));
+
+        workspace.on('todos.fetched', function (data) {
+            var haystack = JSON.parse(sessionStorage.getItem('todos'));
+            var todos = data.data.filter(function (todo) {
+                return haystack.indexOf(todo.id) === -1;
+            });
+            if (todos.length) {
+                toastr.info(todos[0].summary, '新的待办事项!', {
+                    positionClass: 'toast-bottom-center',
+                    timeOut: 3000,
+                });
+                sessionStorage.setItem('todos', JSON.stringify(haystack.concat(todos.map(function (todo) {
+                    return todo.id;
+                }))));
+            }
+        });
+    });
+    setInterval(function () {
+        bus.trigger('todos.fetch');
+    }, 10000);
     next();
 };
 

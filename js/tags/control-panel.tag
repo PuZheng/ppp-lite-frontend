@@ -139,12 +139,12 @@ var auth = require('../stores/auth.js');
               project: self.opts.project,
               requestor: auth.user().id,
               comment: formEl.comment.value,
-              attachments: formEl.attachments.value.split(',').map(function (id) {
+              attachments: formEl.attachments.value? formEl.attachments.value.split(',').map(function (id) {
                 var asset = self.opts.project.assets.filter(function (asset) {
                   return asset.id == id;
                 });
                 return asset.length && asset[0];
-              }),
+              }): [],
             });
           },
           closable: false,
