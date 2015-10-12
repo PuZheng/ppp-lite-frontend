@@ -16,6 +16,19 @@ require('./todo-item.tag');
     }).on('todos.fetched', function (data) {
       self.todos = data.data;
       self.update();
+    }).on('todo.updated', function (todo) {
+      if (todo.completed) {
+        self.todos = self.todos.filter(function (todo_) {
+          return todo_.id != todo.id;
+        });
+        self.update();
+        var toastr = require('toastr/toastr.min.js');
+        require('toastr/toastr.min.css');
+        toastr.info('待办事项已经完成！', '', {
+          positionClass: 'toast-bottom-center',
+          timeOut: 1000,
+        });
+      }
     });
 
   </script>
