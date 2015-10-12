@@ -1,5 +1,6 @@
 var riot = require('riot');
 var page = require('page');
+var bus = require('riot-bus');
 
 <todo-item>
   <div class="content" if={ opts.todo.type === 'pre-audit' } onclick={ clickHandler }>
@@ -29,7 +30,13 @@ var page = require('page');
   <script>
     var self = this;
     self.on('mount', function () {
-      $(self.root).find('.ui.checkbox').popup().checkbox();
+      $(self.root).find('.ui.checkbox').popup().checkbox({
+        onChecked: function () {
+          bus.trigger('todo.update', opts.todo.id, {
+            completed: true,
+          })
+        },
+      });
     });
     _.extend(self, {
       _: _,
@@ -40,6 +47,5 @@ var page = require('page');
         e.stopPropagation();
       }
     });
-
   </script>
 </todo-item>
