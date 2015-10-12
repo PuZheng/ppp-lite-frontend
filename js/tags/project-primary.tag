@@ -61,7 +61,7 @@ var bus = require('riot-bus');
       <a href="#" class="ui button" onclick={ back }>返回</a>
       <button class="ui green button" type="submit" if={ !opts.project }>提交</button>
     </form>
-    <control-panel if={ opts.project } project={ opts.project } user={ opts.ctx.user } disabled={ uneditable }></control-panel>
+    <control-panel if={ opts.project } project={ opts.project } ctx={ opts.ctx } disabled={ uneditable }></control-panel>
   </div>
   <style scope>
     .basic.main.segment {

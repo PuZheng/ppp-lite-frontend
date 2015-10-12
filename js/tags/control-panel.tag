@@ -4,43 +4,14 @@ var swal = require('sweetalert/sweetalert.min.js');
 require('sweetalert/sweetalert.css');
 var principal = require('principal');
 var auth = require('../stores/auth.js');
+require('./publish-button.tag');
+require('./delete-button.tag')
 
 <control-panel>
   <div class="ui buttons">
-    <button class="delete ui red button" onclick={ handlers.delete } if={ can.delete && !opts.project.workflow }>删除</button>
-    <button class="delete ui blue button" if={ !opts.project.workflow && can.publish } onclick={ handlers.publish }>发布</button>
-    <div class="ui modal basic publish" if={ !opts.project.workflow && can.publish  }>
-      <div class="header">您确认要发布该项目？</div>
-      <div class="content">
-        <form class="ui form">
-          <div class="field">
-            <textarea name="comment" cols="30" rows="10" placeholder="填写补充说明(可选)..."></textarea>
-          </div>
-          <div class="field">
-            <div class="ui fluid multiple search selection dropdown { opts.disabled? 'disabled': '' }">
-              <input type="hidden" name="attachments">
-              <i class="dropdown icon"></i>
-              <div class="default text">添加附件</div>
-              <div class="menu">
-                <div class="item" each={ opts.project.assets } data-value={ id }>{ filename.split('/')[1] }</div>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="actions">
-        <div class="ui black deny button">
-          取消
-        </div>
-        <div class="ui red positive button">
-          确认发布
-        </div>
-      </div>
-    </div>
+    <delete-button project={ opts.project } ctx={ opts.ctx }></delete-button>
+    <publish-button project={ opts.project } ctx={ opts.ctx }></publish-button>
     <raw each={ project.workflow.nextTasks }>
-      <button class="delete ui blue button" if={ name === 'START' && can.publish } onclick={ handlers.publish }>发布</button>
-
-
       <button class="delete ui red button" if={ name === '预审' && parent.role === 'PPP中心' } onclick={ denyPreAudit }>驳回预审</button>
       <button class="delete ui green button" if={ name === '预审' && parent.role === 'PPP中心' } onclick={ passPreAudit }>通过预审</button>
       <div class="ui small modal deny pre-audit" if={ name == '预审' && parent.role === 'PPP中心' }>
@@ -119,50 +90,11 @@ var auth = require('../stores/auth.js');
       { email: 'zx1@gmail.com' },
       { email: 'zx2@gmail.com' }
     ]
-    self.on('mount', function () {
-      ['delete', 'publish'].forEach(function (op) {
-        principal.permit('project.' + op, self.opts.project).done(function () {
-          self.can[op] = true;
-          self.update();
-        });
-      });
+    self.on('project.published', function () {
+      self.update();
     }).on('update', function () {
       $(self.root).find('.publish.modal .ui.dropdown').dropdown();
     });
-    self.handlers = {
-      publish: function (e) {
-        self.$publishModal = self.$publishModal || $('.publish.modal').modal({
-          onApprove: function () {
-            var formEl = $(this).find('.ui.form')[0];
-            bus.trigger('project.publish', self.opts.project, {
-              projectId: self.opts.project.id,
-              project: self.opts.project,
-              requestor: auth.user().id,
-              comment: formEl.comment.value,
-              attachments: formEl.attachments.value? formEl.attachments.value.split(',').map(function (id) {
-                var asset = self.opts.project.assets.filter(function (asset) {
-                  return asset.id == id;
-                });
-                return asset.length && asset[0];
-              }): [],
-            });
-          },
-          closable: false,
-        });
-        self.$publishModal.modal('show');
-      },
-      delete: function (e) {
-        e.stopPropagation();
-        swal({
-          type: 'warning',
-          title: '您确认要删除该项目?',
-          showCancelButton: true,
-          closeOnConfirm: false,
-        }, function (confirmed) {
-          confirmed && bus.trigger('project.delete', self.opts.project.id);
-        });
-      },
-    };
 
     self.denyPreAudit = function (e) {
       self.$denyPreAuditModal = self.$denyPreAuditModal || $(self.root).find('.ui.deny.pre-audit.modal').modal({
