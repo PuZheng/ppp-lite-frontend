@@ -42,6 +42,17 @@ require('toastr/toastr.min.css');
     self.mixin(bus.Mixin);
     self.on('mount', function () {
       $(self.root).find('.menu .item').tab();
+      if (!opts.ctx.params.id) {
+        principal.permit('project.create').fail(function () {
+          swal({
+            type: 'error',
+            title: '非法操作',
+            text: '您无权创建项目!',
+          }, function () {
+            page('/');
+          });
+        });
+      }
     }).on('project.fetching project.saving project.updating project.publishing project.task.passing project.task.denying', function () {
       self.loading = true;
       self.update();
