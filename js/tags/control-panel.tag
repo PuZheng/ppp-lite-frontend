@@ -90,7 +90,9 @@ require('./delete-button.tag')
       { email: 'zx1@gmail.com' },
       { email: 'zx2@gmail.com' }
     ]
-    self.on('project.published', function () {
+    self.on('project.published', function (project) {
+      self.opts.project.workflowId = project.workflowId;
+      self.opts.project.workflow = project.workflow;
       self.update();
     }).on('update', function () {
       $(self.root).find('.publish.modal .ui.dropdown').dropdown();

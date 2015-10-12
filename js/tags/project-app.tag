@@ -128,13 +128,13 @@ require('toastr/toastr.min.css');
       }, function () {
         page('/'); // TODO should return to a back ref
       });
-    }).on('project.published', function (workflow) {
+    }).on('project.published', function (project) {
       self.loading = false;
       swal({
         type: 'success',
         title: '该项目已经发布!'
       }, function () {
-        self.project.workflow = workflow;
+        _.assign(self.project, project);
         self.update();
       });
     }).on('project.task.passed project.task.denied', function (which, workflow) {

@@ -36,16 +36,8 @@ var bus = require('riot-bus');
   <script>
     var self = this;
 
-    self.on('mount', function () {
-      principal.permit('project.publish', self.opts.project).done(function () {
-        self.can = (!self.opts.project.workflow
-          || self.opts.project.workflow.nextTasks.some(function (task) {
-            return task.name === 'START';
-          }));
-        self.update();
-      });
-    }).on('update', function () {
-      if (self.opts.ctx.user && self.opts.prject) {
+    self.on('update', function () {
+      if (self.opts.ctx.user && self.opts.project) {
         principal.permit('project.publish', self.opts.project).done(function () {
           self.can = (!self.opts.project.workflow
             || self.opts.project.workflow.nextTasks.some(function (task) {

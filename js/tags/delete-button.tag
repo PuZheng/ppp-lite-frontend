@@ -9,11 +9,8 @@ require('sweetalert/sweetalert.css');
 
   <script>
     var self = this;
-    self.on('mount', function () {
-      self.update();
-    }).on('update', function () {
-      if (self.opts.ctx.user && self.opts.prject) {
-        debugger;
+    self.on('update', function () {
+      if (self.opts.ctx.user && self.opts.project) {
         principal.permit('project.delete', self.opts.project).done(function () {
           self.can = !self.opts.project.workflow;
         });
