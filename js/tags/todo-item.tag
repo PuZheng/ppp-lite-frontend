@@ -13,7 +13,7 @@ var bus = require('riot-bus');
     </div>
     <div class="ui horizontal list">
       <div class="item">备注 - { opts.todo.bundle.comment }</div>
-      <div class="item" if={ opts.todo.bundle.attachments && opts.todo.bundle.attachments.length }>附件 - { _.pluck(opts.todo.bundle.attachments, 'filename') }</div>
+      <div class="item" if={ filenames }>附件 - { filenames.join('; ') }</div>
     </div>
   </div>
   <style scoped>
@@ -37,6 +37,12 @@ var bus = require('riot-bus');
           })
         },
       });
+      if (opts.todo.bundle.attachments) {
+        self.filenames = _.pluck(opts.todo.bundle.attachments, 'filename').map(function (fname) {
+          return fname.split('/')[1];
+        });
+        self.update();
+      }
     });
     _.extend(self, {
       _: _,
