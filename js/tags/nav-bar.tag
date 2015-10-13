@@ -61,8 +61,13 @@ var page = require('page');
       _.assign(self.opts.ctx.user, user);
       self.update();
     }).on('todos.fetched', function (data) {
-      self.todoCount = data.totalCount;
+      self.todoCount = data.data.length;
       self.update();
+    }).on('todo.updated', function (todo) {
+      if (todo.completed) {
+        --self.todoCount;
+        self.update();
+      }
     });
 
     self.logout = function () {

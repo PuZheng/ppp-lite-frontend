@@ -30,5 +30,6 @@ module.exports = {
     },
     'PPP中心': {
         'project.view': '',
+        'project.preAudit': ''
     }
 };

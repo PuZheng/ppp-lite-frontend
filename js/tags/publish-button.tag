@@ -1,38 +1,11 @@
 var riot = require('riot');
 var principal = require('principal');
 var bus = require('riot-bus');
+require('./basic-task-form.tag');
 
 <publish-button>
   <button class="ui blue button" if={ can } onclick={ handler }>发布</button>
-  <div class="ui modal basic publish" if={ can }>
-    <i class="icon close"></i>
-    <div class="header">您确认要发布该项目？</div>
-    <div class="content">
-      <form class="ui form">
-        <div class="field">
-          <textarea name="comment" cols="30" rows="10" placeholder="填写补充说明(可选)..."></textarea>
-        </div>
-        <div class="field">
-          <div class="ui fluid multiple search selection dropdown { opts.disabled? 'disabled': '' }">
-            <input type="hidden" name="attachments">
-            <i class="dropdown icon"></i>
-            <div class="default text">添加附件</div>
-            <div class="menu">
-              <div class="item" each={ opts.project.assets } data-value={ id }>{ filename.split('/')[1] }</div>
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
-    <div class="actions">
-      <div class="ui black deny button">
-        取消
-      </div>
-      <div class="ui red positive button">
-        确认发布
-      </div>
-    </div>
-  </div>
+  <basic-task-form if={can} project={ opts.project } event="project.publish" header="您确认要发布项目?" task="START" on-approve={ onApprove }></basic-task-form>
   <script>
     var self = this;
 
@@ -45,29 +18,22 @@ var bus = require('riot-bus');
             }));
         });
       }
+    }).on('mount', function () {
+      self.formTag = self.tags['basic-task-form'];
     });
 
     self.handler = function (e) {
-        self.$publishModal = self.$publishModal || $(self.root).find('.publish.modal').modal({
-          onApprove: function () {
-            var formEl = $(this).find('.ui.form')[0];
-            bus.trigger('project.publish', self.opts.project, {
-              projectId: self.opts.project.id,
-              project: self.opts.project,
-              requestor: self.opts.ctx.user.id,
-              comment: formEl.comment.value,
-              attachments: formEl.attachments.value? formEl.attachments.value.split(',').map(function (id) {
-                var asset = self.opts.project.assets.filter(function (asset) {
-                  return asset.id == id;
-                });
-                return asset.length && asset[0];
-              }): [],
-            });
-          },
-          closable: false,
-        });
-        self.$publishModal.modal('show');
+      self.formTag.activate();
     };
+
+    self.onApprove = function () {
+      var formEl = $(this.root).find('.ui.form')[0];
+      if (!self.opts.project.workflow) {
+        bus.trigger('project.publish', self.opts.project, self.formTag.bundle());
+      } else {
+        bus.trigger('task.pass', self.opts.project.workflow.id, 'START', self.formTag.bundle());
+      }
+    }
   </script>
 </publish-button>
 

@@ -5,34 +5,18 @@ require('sweetalert/sweetalert.css');
 var principal = require('principal');
 var auth = require('../stores/auth.js');
 require('./publish-button.tag');
-require('./delete-button.tag')
+require('./delete-button.tag');
+require('./deny-pre-audit-button.tag');
+require('./pass-pre-audit-button.tag');
 
 <control-panel>
   <div class="ui buttons">
     <delete-button project={ opts.project } ctx={ opts.ctx }></delete-button>
     <publish-button project={ opts.project } ctx={ opts.ctx }></publish-button>
+    <deny-pre-audit-button project={ opts.project } ctx={ opts.ctx }></deny-pre-audit-button>
+    <pass-pre-audit-button project={ opts.project } ctx={ opts.ctx }><pass-pre-audit-button>
     <raw each={ project.workflow.nextTasks }>
-      <button class="delete ui red button" if={ name === '预审' && parent.role === 'PPP中心' } onclick={ denyPreAudit }>驳回预审</button>
-      <button class="delete ui green button" if={ name === '预审' && parent.role === 'PPP中心' } onclick={ passPreAudit }>通过预审</button>
-      <div class="ui small modal deny pre-audit" if={ name == '预审' && parent.role === 'PPP中心' }>
-        <i class="close icon"></i>
-        <div class="header">
-          请填写驳回意见
-        </div>
-        <div class="content">
-          <textarea cols="80" rows="10"></textarea>
-        </div>
-        <div class="actions">
-          <div class="ui black deny button">
-            取消
-          </div>
-          <div class="ui red positive button">
-            确认驳回
-          </div>
-        </div>
-      </div>
-
-      <button class="delete ui blue button" if={ name === '选择咨询公司' && parent.role === '业主' } onclick={ chooseConsultant }>选择咨询公司</button>
+button class="delete ui blue button" if={ name === '选择咨询公司' && parent.role === '业主' } onclick={ chooseConsultant }>选择咨询公司</button>
 
       <div class="ui small choose consultant modal" if={ name == '选择咨询公司' && parent.role === '业主' }>
         <i class="close icon"></i>
