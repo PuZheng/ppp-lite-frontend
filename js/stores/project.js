@@ -130,28 +130,8 @@ ProjectStore.prototype.publish = function (project, bundle) {
         });
     } else {
         // 如果已经关联到了工作流
-        this.passTask('START', project, 'START');
+        bus.trigger('task.pass', project.workflowId, 'START', bundle);
     }
-};
-
-ProjectStore.prototype.passTask = function (project, taskName, bundle) {
-    bus.trigger('project.task.passing');
-    request.put(config.backend + '/workflow/' + project.workflowId + '/' + taskName, bundle)
-    .done(function (res) {
-        bus.trigger('project.task.passed', res.body);
-    }).fail(function () {
-        bus.trigger('project.task.pass.failed', project);
-    });
-};
-
-ProjectStore.prototype.denyTask = function (project, taskName, bundle) {
-    bus.trigger('project.task.denying');
-    request.delete(config.backend + '/workflow/' + project.workflowId + '/' + taskName, bundle)
-    .done(function (res) {
-        bus.trigger('project.task.denied', res.body);
-    }).fail(function () {
-        bus.trigger('project.task.pass.failed', project);
-    });
 };
 
 module.exports = new ProjectStore();

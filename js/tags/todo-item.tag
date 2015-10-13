@@ -3,7 +3,7 @@ var page = require('page');
 var bus = require('riot-bus');
 
 <todo-item>
-  <div class="content" if={ opts.todo.type === 'pre-audit' } onclick={ clickHandler }>
+  <div class="content" if={ ~['pre-audit', 'publish', 'choose-consultant'].indexOf(opts.todo.type) } onclick={ clickHandler }>
     <div class="ui small header">
       <div class="ui checkbox" data-content="标记完成" onclick={ completeHandler }>
         <input type="checkbox">
@@ -41,7 +41,7 @@ var bus = require('riot-bus');
     _.extend(self, {
       _: _,
       clickHandler: function (e) {
-        page('/project/object/' + self.opts.todo.bundle.projectId);
+        page('/project/object/' + self.opts.todo.bundle.project.id);
       },
       completeHandler: function (e) {
         e.stopPropagation();

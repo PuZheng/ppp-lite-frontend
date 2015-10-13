@@ -14,7 +14,7 @@ var riot = require('riot');
     self.on('update', function () {
       if (self.opts.workflow) {
         self.nextTasks = self.opts.workflow.nextTasks.map(function (task) {
-          return task.name
+          return task.name === 'START'? '发布': task.name;
         }).join('|');
       }
     })

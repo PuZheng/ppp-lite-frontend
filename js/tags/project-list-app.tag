@@ -24,7 +24,7 @@ require('./project-list-filter.tag');
     </a>
   </div>
   <div class="ui attached segment" if={ !_.isEmpty(projects) }>
-      <project-list-filter></project-list-filter>
+    <project-list-filter ctx={ opts.ctx }></project-list-filter>
   </div>
   <div class="ui bottom grey attached segment">
     <loader if={ loading }></loader>
@@ -62,7 +62,7 @@ require('./project-list-filter.tag');
               <div class="ui tiny header">
                 等待
                 <raw each={ workflow.nextTasks }>
-                  { name }
+                  { name === 'START'? '发布': name }
                 </raw>
               </div>
             </div>

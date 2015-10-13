@@ -137,7 +137,7 @@ require('toastr/toastr.min.css');
         _.assign(self.project, project);
         self.update();
       });
-    }).on('project.task.passed project.task.denied', function (which, workflow) {
+    }).on('task.passed task.denied', function (which, workflow) {
       self.loading = false;
       swal({
         type: 'success',

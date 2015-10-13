@@ -2,7 +2,7 @@ var riot = require('riot');
 var bus = require('riot-bus');
 
 <project-list-filter>
-  <div class="ui only myself checkbox" if={ opts.ctx.user.role === '业主' }>
+  <div class="ui only myself checkbox" if={ opts.ctx.user.role.name === '业主' }>
     <input type="checkbox" name="onlyMyself">
     <label>仅展示本人项目</label>
   </div>
