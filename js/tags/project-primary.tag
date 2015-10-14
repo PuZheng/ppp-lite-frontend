@@ -16,6 +16,8 @@ var bus = require('riot-bus');
         <li>创建人 - <em>{ opts.project.owner.name || opts.project.owner.email }</em></li>
         <li>部门 - <em>{ opts.project.department.name }</em></li>
         <li>创建日期 - <em>{ moment(opts.project.createdAt).format('YYYY年MM月DD日') }</em></li>
+        <li if={ opts.project.consultingFirm }>咨询公司 - { opts.project.consultingFirm.name }</li>
+        <li if={ opts.project.consultant }>咨询顾问 - { opts.project.consultant.name || opts.project.consultant.email }</li>
       </ul>
     </div>
     <form class="ui form" target="#" action="POST">
