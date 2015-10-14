@@ -39,7 +39,6 @@ var bus = require('riot-bus');
     });
     self.bundle = function () {
       var formEl = this.$modal.find('.ui.form')[0];
-      var opts = this.opts;
       return {
         projectId: opts.project.id,
         project: opts.project,

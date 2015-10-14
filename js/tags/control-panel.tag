@@ -8,42 +8,17 @@ require('./publish-button.tag');
 require('./delete-button.tag');
 require('./deny-pre-audit-button.tag');
 require('./pass-pre-audit-button.tag');
+require('./choose-consultant-button.tag');
 
 <control-panel>
   <div class="ui buttons">
     <delete-button project={ opts.project } ctx={ opts.ctx }></delete-button>
     <publish-button project={ opts.project } ctx={ opts.ctx }></publish-button>
     <deny-pre-audit-button project={ opts.project } ctx={ opts.ctx }></deny-pre-audit-button>
-    <pass-pre-audit-button project={ opts.project } ctx={ opts.ctx }><pass-pre-audit-button>
+    <pass-pre-audit-button project={ opts.project } ctx={ opts.ctx }></pass-pre-audit-button>
+    <choose-consultant-button project={ opts.project } ctx={ opts.ctx }></choose-consultant-button>
     <raw each={ project.workflow.nextTasks }>
-button class="delete ui blue button" if={ name === '选择咨询公司' && parent.role === '业主' } onclick={ chooseConsultant }>选择咨询公司</button>
 
-      <div class="ui small choose consultant modal" if={ name == '选择咨询公司' && parent.role === '业主' }>
-        <i class="close icon"></i>
-        <div class="header">
-          请选择咨询公司
-        </div>
-        <div class="content">
-          <div class="grouped fields">
-            <raw each={ consultant, i in consultants }>
-              <div class="field">
-                <div class="ui radio checkbox">
-                  <input type="radio" name="consultant">
-                  <label>{ consultant.email }</label>
-                </div>
-              </div>
-            </raw>
-          </div>
-        </div>
-        <div class="actions">
-          <div class="ui black deny button">
-            取消
-          </div>
-          <div class="ui red positive button">
-            确认
-          </div>
-        </div>
-      </div>
 
       <button class="delete ui red button" if={ name === '咨询公司接受邀请' && parent.role === '咨询顾问' } onclick={ denyInvitation  }>拒绝邀请</button>
       <button class="delete ui blue button" if={ name === '咨询公司接受邀请' && parent.role === '咨询顾问' } onclick={ acceptInvitaion }>接受邀请</button>
