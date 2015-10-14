@@ -57,7 +57,6 @@ var bus = require('riot-bus');
             return false;
           }
           bus.trigger('task.pass', opts.project.workflowId, opts.task, {
-            projectId: opts.project.id,
             project: opts.project,
             comment: formEl.comment.value,
             consultant: formEl.consultant.value
