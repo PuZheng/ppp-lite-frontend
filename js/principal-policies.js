@@ -27,6 +27,7 @@ module.exports = {
         'project.delete': ofSameOwner,
         'project.publish': ofSameOwner,
         'project.create': '',
+        'project.chooseConsultant': ofSameOwner,
     },
     'PPP中心': {
         'project.view': '',

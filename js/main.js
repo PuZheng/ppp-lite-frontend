@@ -12,6 +12,7 @@ var authStore = require('./stores/auth.js');
 var assetsStore = require('./stores/assets.js');
 var userStore = require('./stores/user.js');
 var todoStore = require('./stores/todo.js');
+
 var workflowStore = require('./stores/workflow.js');
 var principal = require('principal');
 var toastr = require('toastr/toastr.min.js');
@@ -81,7 +82,7 @@ var projectList = function (ctx, next) {
 };
 
 var project = function (ctx, next) {
-    switchApp('project-app', [ projectTypeStore, projectStore, tagStore, assetsStore, workflowStore ], {
+    switchApp('project-app', [ projectTypeStore, projectStore, tagStore, assetsStore, workflowStore, userStore ], {
         ctx: ctx,
     });
     (function (cb) {
