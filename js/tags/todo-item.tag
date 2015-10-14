@@ -3,7 +3,7 @@ var page = require('page');
 var bus = require('riot-bus');
 
 <todo-item>
-  <div class="content" if={ ~['pre-audit', 'publish', 'choose-consultant', 'accept-invitation'].indexOf(opts.todo.type) } onclick={ clickHandler }>
+  <div class="content" if={ ~['pre-audit', 'publish', 'choose-consultant', 'accept-invitation', 'upload-scheme'].indexOf(opts.todo.type) } onclick={ clickHandler }>
     <div class="ui small header">
       <div class="ui checkbox" data-content="标记完成" onclick={ completeHandler }>
         <input type="checkbox">
@@ -12,7 +12,7 @@ var bus = require('riot-bus');
        { opts.todo.summary }</em>
     </div>
     <div class="ui horizontal list">
-      <div class="item">备注 - { opts.todo.bundle.comment }</div>
+      <div class="item" if={ opts.todo.bundle.comment }>备注 - { opts.todo.bundle.comment }</div>
       <div class="item" if={ filenames }>附件 - { filenames.join('; ') }</div>
     </div>
   </div>

@@ -13,7 +13,7 @@ var page = require('page');
         <a class="item { opts.ctx.pathname === '/project/progressing-list' && 'active' }" href="/project/progressing-list">进行中项目</a>
       </div>
     </div>
-    <a class="ui item { opts.ctx.pathname === '/project/progressing-list' && 'active' }" if={ opts.ctx.user && opts.ctx.user.role.name === 'PPP中心' } href="/project/progressing-list">
+    <a class="ui item { opts.ctx.pathname === '/project/progressing-list' && 'active' }" if={ opts.ctx.user && (opts.ctx.user.role.name === 'PPP中心' || opts.ctx.user.role.name === '咨询顾问') } href="/project/progressing-list">
       项目管理
     </a>
     <a class="ui item { opts.ctx.pathname === '/todo/list' && 'active' }" href="/todo/list">
