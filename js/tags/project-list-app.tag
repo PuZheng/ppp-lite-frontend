@@ -19,7 +19,7 @@ require('./project-list-filter.tag');
     <a class="{ (opts.ctx.path === '/project/progressing-list')? 'active': '' } item" href="/project/progressing-list">
       进行中
     </a>
-    <a class="{ opts.ctx.path == '/project/unpublished-list'? 'active': ''} item" href="/project/unpublished-list" if={ opts.ctx.user.role.name != 'PPP中心' }>
+    <a class="{ opts.ctx.path == '/project/unpublished-list'? 'active': ''} item" href="/project/unpublished-list" if={ opts.ctx.user.role.name == '业主' }>
       未发布
     </a>
   </div>
