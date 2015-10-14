@@ -9,6 +9,7 @@ require('./delete-button.tag');
 require('./deny-pre-audit-button.tag');
 require('./pass-pre-audit-button.tag');
 require('./choose-consultant-button.tag');
+require('./accept-invitation-button.tag');
 
 <control-panel>
   <div class="ui buttons">
@@ -17,10 +18,10 @@ require('./choose-consultant-button.tag');
     <deny-pre-audit-button project={ opts.project } ctx={ opts.ctx }></deny-pre-audit-button>
     <pass-pre-audit-button project={ opts.project } ctx={ opts.ctx }></pass-pre-audit-button>
     <choose-consultant-button project={ opts.project } ctx={ opts.ctx }></choose-consultant-button>
+    <accept-invitation-button project={ opts.project } ctx={ opts.ctx }></accept-invitation-button>
     <raw each={ project.workflow.nextTasks }>
 
 
-      <button class="delete ui red button" if={ name === '咨询公司接受邀请' && parent.role === '咨询顾问' } onclick={ denyInvitation  }>拒绝邀请</button>
       <button class="delete ui blue button" if={ name === '咨询公司接受邀请' && parent.role === '咨询顾问' } onclick={ acceptInvitaion }>接受邀请</button>
 
       <button class="delete ui blue button" if={ name === '提交实施方案' && parent.role === '咨询顾问' } onclick={ publishScheme }>提交实施方案</button>
@@ -98,17 +99,6 @@ require('./choose-consultant-button.tag');
         closeOnConfirm: false,
       }, function (confirmed) {
         confirmed && bus.trigger('project.task.deny', self.project, '咨询公司接受邀请');
-      });
-    };
-
-    self.acceptInvitaion = function () {
-      swal({
-        type: 'warning',
-        title: '您确认接受邀请?',
-        showCancelButton: true,
-        closeOnConfirm: false,
-      }, function (confirmed) {
-        confirmed && bus.trigger('project.task.pass', self.project, '咨询公司接受邀请');
       });
     };
 

@@ -24,6 +24,17 @@ var ofSameOwner = function (need) {
     };
 };
 
+var assignedToMe = function (need) {
+    return function (project) {
+        var ret = $.Deferred();
+        if (project.consultantId == auth.user().id) {
+            ret.resolve(need);
+        } else {
+            ret.reject(need);
+        }
+        return ret;
+    };
+};
 
 module.exports = {
     '业主': {
@@ -39,14 +50,7 @@ module.exports = {
         'project.preAudit': ''
     },
     '咨询顾问': {
-        'project.view': function (project) {
-            var ret = $.Deferred();
-            if (project.consultantId == auth.user().id) {
-                ret.resolve('project.view');
-            } else {
-                ret.reject('project.view');
-            }
-            return ret;
-        },
+        'project.view': assignedToMe('project.view'),
+        'project.acceptInvitation': assignedToMe('project.acceptInvitation'),
     }
 };

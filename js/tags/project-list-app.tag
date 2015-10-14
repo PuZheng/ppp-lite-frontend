@@ -12,7 +12,7 @@ require('./project-list-filter.tag');
 
 <project-list-app>
   <div class="ui top attached tabular menu">
-    <a class="new ui green icon button" href='/project/object'>
+    <a class="new ui green icon button" href='/project/object' if={ opts.ctx.user.role.name === '业主' }>
       <i class="icon plus"></i>
       新建
     </a>
