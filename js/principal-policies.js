@@ -1,36 +1,52 @@
 var auth = require('./stores/auth.js');
 
-var ofSameDepartment = function (project) {
-    var ret = $.Deferred();
-    if (project.department.id != auth.user().department.id) {
-        ret.reject('project.view');
-    } else {
-        ret.resolve();
-    }
-    return ret;
+var ofSameDepartment = function (need) {
+    return function (project) {
+        var ret = $.Deferred();
+        if (project.department.id != auth.user().department.id) {
+            ret.reject(need);
+        } else {
+            ret.resolve(need);
+        }
+        return ret;
+    };
 };
 
-var ofSameOwner = function (project) {
-    var ret = $.Deferred();
-    if (project.ownerId != auth.user().id) {
-        ret.reject('project.edit');
-    } else {
-        ret.resolve();
-    }
-    return ret;
+var ofSameOwner = function (need) {
+    return function (project) {
+        var ret = $.Deferred();
+        if (project.ownerId != auth.user().id) {
+            ret.reject(need);
+        } else {
+            ret.resolve(need);
+        }
+        return ret;
+    };
 };
+
 
 module.exports = {
     '业主': {
-        'project.view': ofSameDepartment,
-        'project.edit': ofSameOwner,
-        'project.delete': ofSameOwner,
-        'project.publish': ofSameOwner,
+        'project.view': ofSameDepartment('project.view'),
+        'project.edit': ofSameOwner('project.edit'),
+        'project.delete': ofSameOwner('project.delete'),
+        'project.publish': ofSameOwner('project.publish'),
         'project.create': '',
-        'project.chooseConsultant': ofSameOwner,
+        'project.chooseConsultant': ofSameOwner('project.chooseConsultant'),
     },
     'PPP中心': {
         'project.view': '',
         'project.preAudit': ''
+    },
+    '咨询顾问': {
+        'project.view': function (project) {
+            var ret = $.Deferred();
+            if (project.consultantId == auth.user().id) {
+                ret.resolve('project.view');
+            } else {
+                ret.reject('project.view');
+            }
+            return ret;
+        },
     }
 };
