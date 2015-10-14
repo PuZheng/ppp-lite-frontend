@@ -44,13 +44,41 @@ module.exports = {
         'project.publish': ofSameOwner('project.publish'),
         'project.create': '',
         'project.chooseConsultant': ofSameOwner('project.chooseConsultant'),
+        'project.upload': ofSameOwner('project.upload'),
+        'project.deleteAssets': ofSameOwner('project.deleteAssets'),
     },
     'PPP中心': {
         'project.view': '',
-        'project.preAudit': ''
+        'project.preAudit': '',
+        'project.upload': function (project) {
+            var ret = $.Deferred();
+            if (project.workflow && project.workflow.nextTasks.some(function (task) {
+                return ~['预审', '实施方案审核'].indexOf(task.name);
+            })) {
+                ret.resolve('project.upload');
+            } else {
+                ret.reject('project.upload');
+            }
+            return ret;
+        }
     },
     '咨询顾问': {
         'project.view': assignedToMe('project.view'),
         'project.acceptInvitation': assignedToMe('project.acceptInvitation'),
+        'project.upload': function (project) {
+            var ret = $.Deferred();
+            assignedToMe('project.upload')(project).done(function () {
+                if (project.workflow && project.workflow.nextTasks.some(function (task) {
+                    return task.name === '提交实施方案';
+                })) {
+                    ret.resolve('project.upload');
+                } else {
+                    ret.reject('project.upload');
+                }
+            }).fail(function () {
+                ret.reject('project.upload');
+            });
+            return ret;
+        },
     }
 };

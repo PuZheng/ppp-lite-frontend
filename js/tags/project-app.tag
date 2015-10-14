@@ -30,7 +30,7 @@ require('toastr/toastr.min.css');
             <project-primary project={ project } ctx={ opts.ctx }></project-primary>
           </div>
           <div class="ui bottom attached tab segment" data-tab="assets" show={ project }>
-            <assets-repo project={ project } if={ project }></assets-repo>
+            <assets-repo project={ project } ctx={ opts.ctx } if={ project }></assets-repo>
           </div>
         </div>
       </div>

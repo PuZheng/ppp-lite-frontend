@@ -9,16 +9,14 @@ var bus = require('riot-bus');
 require('./asset-item.tag');
 var swal = require('sweetalert/sweetalert.min.js');
 require('sweetalert/sweetalert.css');
+var principal = require('principal');
 
 <assets-repo>
   <loader if={ loading }></loader>
   <div class="ui top attached icon grey inverted menu">
-    <a class="item">
+    <a class="item" if={ can.upload }>
       <i class="ui icon upload"></i>
       <input type="file" name="file">
-    </a>
-    <a class="item">
-      <i class="ui icon trash"></i>
     </a>
   </div>
   <div class="ui attached segment">
@@ -72,6 +70,12 @@ require('sweetalert/sweetalert.css');
         bus.trigger('asset.upload', file, self.opts.project.name + '/' + file.name);
         $(self.root).find('.attached.segment').perfectScrollbar();
       });
+    }).on('update', function () {
+      if (opts.project && opts.ctx.user) {
+        principal.permit('project.upload', opts.project).done(function () {
+          self.can.upload = true;
+        });
+      }
     }).on('before.asset.upload', function () {
       nprogress.start();
       self.loading = true;
