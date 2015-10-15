@@ -14,6 +14,8 @@ require('./deny-invitation-button.tag');
 require('./upload-scheme-button.tag');
 require('./pass-internal-audit-button.tag');
 require('./deny-internal-audit-button.tag');
+require('./pass-audit-button.tag');
+require('./deny-audit-button.tag');
 
 <control-panel>
   <div class="ui buttons">
@@ -27,12 +29,8 @@ require('./deny-internal-audit-button.tag');
     <upload-scheme-button project={ opts.project } ctx={ opts.ctx }></upload-scheme-button>
     <pass-internal-audit-button project={ opts.project } ctx={ opts.ctx }></pass-internal-audit-button>
     <deny-internal-audit-button project={ opts.project } ctx={ opts.ctx }></deny-internal-audit-button>
-    <raw each={ project.workflow.nextTasks }>
-
-      <button class="delete ui red button" if={ name === '实施方案审核' && parent.role === 'PPP中心' } onclick={ denyScheme }>驳回实施方案</button>
-      <button class="delete ui blue button" if={ name === '实施方案审核' && parent.role === 'PPP中心' } onclick={ acceptScheme }>通过实施方案</button>
-
-    </row>
+    <pass-audit-button project={ opts.project } ctx={ opts.ctx }></pass-audit-button>
+    <deny-audit-button project={ opts.project } ctx={ opts.ctx }></deny-audit-button>
   </div>
   <style scope>
     .ui.modal .content textarea {

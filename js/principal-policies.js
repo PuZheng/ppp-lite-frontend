@@ -92,7 +92,8 @@ module.exports = {
                 ret.reject('project.upload');
             }
             return ret;
-        }
+        },
+        'project.audit': nextTasksContains('实施方案审核', 'project.audit'),
     },
     '咨询顾问': {
         'project.view': assignedToMe('project.view'),
