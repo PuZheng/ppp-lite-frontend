@@ -36,6 +36,22 @@ var assignedToMe = function (need) {
     };
 };
 
+var nextTasksContains = function (taskName, need) {
+    return function (project) {
+        var ret = $.Deferred();
+        if (project.workflow && project.workflow.nextTasks.some(
+            function (task) {
+                return task.name === taskName;
+            })
+           ) {
+               ret.resolve(need);
+           } else {
+               ret.reject(need);
+           }
+        return ret;
+    };
+};
+
 module.exports = {
     '业主': {
         'project.view': ofSameDepartment('project.view'),
@@ -46,6 +62,22 @@ module.exports = {
         'project.chooseConsultant': ofSameOwner('project.chooseConsultant'),
         'project.upload': ofSameOwner('project.upload'),
         'project.deleteAssets': ofSameOwner('project.deleteAssets'),
+        'project.internalAudit': function (project) {
+            var ret = $.Deferred();
+            ofSameOwner('project.internalAudit')(project).done(
+                function () {
+                    nextTasksContains('实施方案内部审核', 'project.internalAudit')(project).done(
+                        function (need) {
+                            ret.resolve(need);
+                        }).fail(function (need) {
+                            ret.reject(need);
+                        });
+            }).fail(function () {
+                ret.reject('project.uploadScheme');
+            });
+            return ret;
+
+        }
     },
     'PPP中心': {
         'project.view': '',
@@ -96,6 +128,6 @@ module.exports = {
                 ret.reject('project.uploadScheme');
             });
             return ret;
-        }
+        },
     }
 };

@@ -15,7 +15,7 @@ require('./basic-task-form.tag');
             function (task) {
               return task.name === '预审';
             });
-        })
+        });
       }
     }).on('mount', function () {
       self.formTag = self.tags['basic-task-form'];
