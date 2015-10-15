@@ -58,6 +58,7 @@ var principal = require('principal');
   <script>
     var self = this;
     self.mixin(bus.Mixin);
+    self.can = {};
 
     nprogress.configure({ trickle: false });
 

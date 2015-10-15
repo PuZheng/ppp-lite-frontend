@@ -10,6 +10,7 @@ require('./deny-pre-audit-button.tag');
 require('./pass-pre-audit-button.tag');
 require('./choose-consultant-button.tag');
 require('./accept-invitation-button.tag');
+require('./deny-invitation-button.tag');
 
 <control-panel>
   <div class="ui buttons">
@@ -19,6 +20,7 @@ require('./accept-invitation-button.tag');
     <pass-pre-audit-button project={ opts.project } ctx={ opts.ctx }></pass-pre-audit-button>
     <choose-consultant-button project={ opts.project } ctx={ opts.ctx }></choose-consultant-button>
     <accept-invitation-button project={ opts.project } ctx={ opts.ctx }></accept-invitation-button>
+    <deny-invitation-button project={ opts.project } ctx={ opts.ctx }></deny-invitation-button>
     <raw each={ project.workflow.nextTasks }>
 
 

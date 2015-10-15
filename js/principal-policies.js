@@ -64,7 +64,7 @@ module.exports = {
     },
     '咨询顾问': {
         'project.view': assignedToMe('project.view'),
-        'project.acceptInvitation': assignedToMe('project.acceptInvitation'),
+        'project.invited': assignedToMe('project.invited'),
         'project.upload': function (project) {
             var ret = $.Deferred();
             assignedToMe('project.upload')(project).done(function () {
