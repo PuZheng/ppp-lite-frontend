@@ -150,7 +150,7 @@ var setupTodoStore = function (ctx, next) {
     });
     setInterval(function () {
         bus.trigger('todos.fetch');
-    }, 10000);
+    }, 15000);
     next();
 };
 

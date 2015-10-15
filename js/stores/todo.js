@@ -33,6 +33,7 @@ TodoStore.prototype.update = function (id, patch) {
 
     var ret = $.Deferred();
     bus.trigger('todo.updating');
+        debugger;
     request.put(joinURL(config.backend, '/todo/object/' + id), patch).done(function (res) {
         bus.trigger('todo.updated', res.body);
         bus.trigger('todo.update.end');

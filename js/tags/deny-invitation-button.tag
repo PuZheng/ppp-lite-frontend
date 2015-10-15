@@ -4,8 +4,8 @@ var bus = require('riot-bus');
 var swal = require('sweetalert/sweetalert.min.js');
 require('sweetalert/sweetalert.css');
 
-<accept-invitation-button>
-  <button class="ui green button" if={ can } onclick={ handler }>接受邀请</button>
+<deny-invitation-button>
+  <button class="ui red button" if={ can } onclick={ handler }>拒绝接受邀请</button>
 
   <script>
     var self = this;
@@ -22,16 +22,16 @@ require('sweetalert/sweetalert.css');
 
     self.handler = function (e) {
       swal({
-        type: 'info',
-        title: '确认接受邀请？',
+        type: 'warning',
+        title: '确认拒绝接受邀请？',
         showCancelButton: true,
         closeOnConfirm: false,
       }, function (confirmed) {
-        confirmed && bus.trigger('task.pass', self.opts.project.workflowId, '接受邀请', {
+        confirmed && bus.trigger('task.deny', self.opts.project.workflowId, '接受邀请', {
           project: opts.project,
         });
       });
     };
   </script>
 
-</accept-invitation-button>
+</deny-invitation-button>
