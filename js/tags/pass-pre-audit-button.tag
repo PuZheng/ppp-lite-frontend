@@ -1,6 +1,5 @@
 var riot = require('riot');
 var principal = require('principal');
-var bus = require('riot-bus');
 require('./basic-task-form.tag');
 
 <pass-pre-audit-button>
@@ -9,8 +8,9 @@ require('./basic-task-form.tag');
   <script>
     var self = this;
     self.on('update', function () {
-      if (self.opts.ctx.user && self.opts.project && self.opts.project.workflow) {
+      if (opts.ctx.user && opts.project && opts.project.workflow) {
         principal.permit('project.preAudit').done(function () {
+          // TODO move to policies
           self.can = self.opts.project.workflow.nextTasks.some(
             function (task) {
               return task.name === '预审';

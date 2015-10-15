@@ -80,5 +80,22 @@ module.exports = {
             });
             return ret;
         },
+        'project.uploadScheme': function (project) {
+            var ret = $.Deferred();
+            assignedToMe('project.uploadScheme')(project).done(function () {
+                if (project.workflow && project.workflow.nextTasks.some(
+                    function (task) {
+                        return task.name === '提交实施方案';
+                    })
+                ) {
+                    ret.resolve('project.uploadScheme');
+                } else {
+                    ret.reject('project.uploadScheme');
+                }
+            }).fail(function () {
+                ret.reject('project.uploadScheme');
+            });
+            return ret;
+        }
     }
 };
