@@ -11,6 +11,7 @@ require('./pass-pre-audit-button.tag');
 require('./choose-consultant-button.tag');
 require('./accept-invitation-button.tag');
 require('./deny-invitation-button.tag');
+require('./upload-scheme-button.tag');
 
 <control-panel>
   <div class="ui buttons">
@@ -21,12 +22,9 @@ require('./deny-invitation-button.tag');
     <choose-consultant-button project={ opts.project } ctx={ opts.ctx }></choose-consultant-button>
     <accept-invitation-button project={ opts.project } ctx={ opts.ctx }></accept-invitation-button>
     <deny-invitation-button project={ opts.project } ctx={ opts.ctx }></deny-invitation-button>
+    <upload-scheme-button project={ opts.project } ctx={ opts.ctx }></upload-scheme-button>
     <raw each={ project.workflow.nextTasks }>
 
-
-      <button class="delete ui blue button" if={ name === '咨询公司接受邀请' && parent.role === '咨询顾问' } onclick={ acceptInvitaion }>接受邀请</button>
-
-      <button class="delete ui blue button" if={ name === '提交实施方案' && parent.role === '咨询顾问' } onclick={ publishScheme }>提交实施方案</button>
 
       <button class="delete ui red button" if={ name === '实施方案内部审核' && parent.role === '业主' } onclick={ denySchemeInternally  }>驳回实施方案</button>
       <button class="delete ui blue button" if={ name === '实施方案内部审核' && parent.role === '业主' } onclick={ acceptSchemeInternally }>通过实施方案</button>

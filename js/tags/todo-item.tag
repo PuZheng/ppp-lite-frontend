@@ -3,7 +3,7 @@ var page = require('page');
 var bus = require('riot-bus');
 
 <todo-item>
-  <div class="content" if={ ~['pre-audit', 'publish', 'choose-consultant', 'accept-invitation', 'upload-scheme'].indexOf(opts.todo.type) } onclick={ clickHandler }>
+  <div class="content" if={ ~['pre-audit', 'publish', 'choose-consultant', 'accept-invitation', 'upload-scheme', 'internal-audit'].indexOf(opts.todo.type) } onclick={ clickHandler }>
     <div class="ui small header">
       <div class="ui checkbox" data-content="标记完成" onclick={ completeHandler }>
         <input type="checkbox">
